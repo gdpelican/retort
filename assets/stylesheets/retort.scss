@@ -5,4 +5,38 @@
   margin: 2px;
   border-radius: 5px;
   border: 1px solid #ccf;
+  position: relative;
+}
+
+.post-menu-area {
+  clear: both;
+}
+
+.post-retort:hover .post-retort-tooltip {
+  opacity: 1;
+}
+
+.post-retort-tooltip {
+  opacity: 0;
+  transition: .5s opacity;
+  position: absolute;
+  bottom: -30px;
+  background: black;
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+  word-wrap: normal;
+  left: 50%;
+  transform: translate(-50%, 0);
+  &:after {
+    content: ' ';
+    width: 7px;
+    height: 7px;
+    top: 0;
+    left: 50%;
+    transform: rotate(45deg) translate(-50%, 0);
+    position: absolute;
+    background: black;
+  }
 }

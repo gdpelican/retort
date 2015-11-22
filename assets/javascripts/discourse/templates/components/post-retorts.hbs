@@ -1,7 +1,8 @@
 <div class="post-retorts">
   {{#each retort in retorts}}
     <div class="post-retort">
-      <img src="/images/emoji/emoji_one/{{retort.emoji}}.png" class="emoji" title="{{retort.username}}" alt=":{{retort.emoji}}:">
+      <img src="/images/emoji/emoji_one/{{retort.emoji}}.png" class="emoji" alt=":{{retort.emoji}}:">
+      <span class="post-retort-tooltip">{{retort.username}}</span>
     </div>
   {{/each}}
 </div>
