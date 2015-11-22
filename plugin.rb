@@ -1,4 +1,4 @@
-# name: babble
+# name: retort
 # about: Reactions plugin for Discourse
 # version: 0.0.1
 # authors: James Kiesel (gdpelican)
