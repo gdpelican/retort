@@ -1,7 +1,6 @@
 import PostMenuComponent from 'discourse/components/post-menu';
 import { Button } from 'discourse/components/post-menu';
 import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
-import { popupAjaxError } from 'discourse/lib/ajax-error';
 import { showSelector } from "discourse/lib/emoji/emoji-toolbar";
 
 export default {

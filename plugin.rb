@@ -32,7 +32,7 @@ after_initialize do
     before_filter :verify_post_and_user, only: [:update, :destroy]
 
     def index
-      render json: serialized_retorts
+      render json: serialized_retorts, root: false
     end
 
     def update
@@ -56,7 +56,7 @@ after_initialize do
     end
 
     def retorts
-      @retorts ||= Retort::Retort.where(post: post, topic: topic)
+      @retorts ||= Retort::Retort.where(topic: topic || post.topic)
     end
 
     def verify_post_and_user
@@ -66,7 +66,7 @@ after_initialize do
 
     def respond_with_retort
       if @retort && @retort.valid?
-        MessageBus.publish("/topic/#{params[:topic_id] || post.topic_id}", serialized_retorts)
+        MessageBus.publish "/retort/topics/#{params[:topic_id] || post.topic_id}", serialized_retorts
         render json: { success: :ok }
       else
         respond_with_unprocessable("Unable to save that retort. Please try again")
@@ -74,7 +74,7 @@ after_initialize do
     end
 
     def serialized_retorts
-      ActiveModel::ArraySerializer.new(retorts, each_serializer: ::Retort::RetortSerializer)
+      ActiveModel::ArraySerializer.new(retorts, each_serializer: ::Retort::RetortSerializer).as_json
     end
 
     def respond_with_unprocessable(error)
@@ -83,16 +83,17 @@ after_initialize do
   end
 
   class ::Retort::RetortSerializer < ActiveModel::Serializer
-    attributes :user_id, :post_id, :emoji
-    define_method :post_id, -> { object.post.id }
-    define_method :user_id, -> { object.key.match(/\d+/).to_s.to_i }
-    define_method :emoji,   -> { object.extra }
+    attributes :username, :post_id, :topic_id, :emoji
+    define_method :topic_id, -> { object.post.topic_id }
+    define_method :post_id,  -> { object.post.id }
+    define_method :username, -> { object.value.split('|').first }
+    define_method :emoji,    -> { object.value.split('|').last }
   end
 
   ::Retort::Retort = Struct.new(:post, :user, :retort) do
 
     def self.where(post: nil, topic: nil, user: nil)
-      where_params = { value: RETORT_PLUGIN_NAME }
+      where_params = { extra: RETORT_PLUGIN_NAME }
       where_params.merge!(key: :"retort_#{user.id}") if user
 
       if post
@@ -106,17 +107,21 @@ after_initialize do
 
     def save
       if existing = PostDetail.find_by(detail_params)
-        retort.present? ? existing.update(extra: retort) : existing.destroy
+        retort.present? ? existing.update(value: value) : existing.destroy
         existing
       else
-        PostDetail.create(detail_params.merge(extra: retort))
+        PostDetail.create(detail_params.merge(value: value))
       end
     end
 
     private
 
+    def value
+      "#{user.username}|#{retort}"
+    end
+
     def detail_params
-      { post: post, key: :"retort_#{user.id}", value: RETORT_PLUGIN_NAME }
+      { post: post, key: :"retort_#{user.id}", extra: RETORT_PLUGIN_NAME }
     end
   end
 
