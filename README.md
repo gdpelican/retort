@@ -8,6 +8,7 @@ Check out a quick gif of it in action [here](http://recordit.co/7vHi2j74Rg.gif)!
 - Edit your web template and add the project clone url. (https://meta.discourse.org/t/install-a-plugin/19157)
 - Rebuild your web container so that the plugin installs.
 - Visit `admin/site_settings/category/all_results`, and look for the `post_menu` option. Insert a `retort` action at the end of the list, like this:
+
 [![admin_panel](screenshots/admin_panel.png)]()
 
 You're done!
