@@ -1,0 +1,4 @@
+plugins:
+  retort_enabled:
+    default: true
+    client: true
