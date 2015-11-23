@@ -24,7 +24,7 @@ There's a few things I'd like to add to this plugin as time allows; feel free to
 ### Contributing
 
 Pull requests welcome! To contribute:
-- Fork it ( https://github.com/<your-github-username>/retort/fork )
+- [Fork it] (../../fork )
 - Create your feature branch (`git checkout -b your-new-feature`)
 - Commit your changes (`git commit -am 'Add some feature`)
 - Push to the branch (`git push origin your-new-feature`)
