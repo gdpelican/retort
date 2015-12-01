@@ -12,7 +12,7 @@ export default {
         return retort.topic_id === id
       }), retorts))
     }
-    Discourse.TopicRoute.on("setupTopicController", function(event) {
+    TopicRoute.on("setupTopicController", function(event) {
       Discourse.ajax('/retorts/index?topic_id=' + event.controller.model.id).then(function(retorts) {
         refreshRetorts(retorts, event.controller.model.id)
       })
