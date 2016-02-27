@@ -40,7 +40,7 @@ function initializePlugin(api)
 
     post.retorts.forEach(function (item, index, enumerable){
       html += '<div class="post-retort">';
-      html += `<img src="/images/emoji/emoji_one/${item.emoji}.png" class="emoji" alt=":${item.emoji}:">`;
+      html += `<img src="${Discourse.Emoji.urlFor(item.emoji)}" class="emoji" alt=":${item.emoji}:">`;
       html += `<span class="post-retort-tooltip">${item.username}</span>`;
       html += '</div>';
     });
