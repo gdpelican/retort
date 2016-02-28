@@ -40,8 +40,8 @@ function initializePlugin(api)
 
     post.retorts.forEach(function (item, index, enumerable){
       html += '<div class="post-retort">';
-      html += `<img src="${Discourse.Emoji.urlFor(item.emoji)}" class="emoji" alt=":${item.emoji}:">`;
-      html += `<span class="post-retort-tooltip">${item.username}</span>`;
+      html += `<img src="${Discourse.Emoji.urlFor(item.retort)}" class="emoji" alt=":${item.retort}:">`;
+      html += `<span class="post-retort-tooltip">${item.usernames} reacted with :${item.retort}:</span>`;
       html += '</div>';
     });
 
@@ -72,13 +72,32 @@ function initializePlugin(api)
           data: { retort: retort }
         })
 
-        var updatedRetorts = post.retorts;
-        updatedRetorts.push({emoji: retort, post_id: post.id, topic_id: post.topic_id, username: self.currentUser.username});
-        post.setProperties({
-          retorts: updatedRetorts
-        });
+        var thisRetort = post.retorts[retort] || {
+          retort: retort,
+          post_id: post.id,
+          topic_id: topic.id,
+          usernames: []
+        }
+        var index = $.inArray(thisRetort, self.currentUser.username)
+        if (index > -1) {
+          thisRetort.usernames.splice(index)
+        } else {
+          thisRetort.usernames.push(self.currentUser.username)
+        }
+        
+        post.retorts[retort] = thisRetort
+        post.setProperties({ retorts: post.retorts });
         self.scheduleRerender();
         return false
+      },
+
+      buildRetort: function(post, retort) {
+        return {
+          retort: retort,
+          post_id: post.id,
+          topic_id: post.topic_id,
+          usernames: []
+        }
       }
     })
   });

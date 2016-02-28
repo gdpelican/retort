@@ -20,7 +20,6 @@ after_initialize do
 
   ::Retort::Engine.routes.draw do
     post   "/:post_id" => "retorts#update"
-    delete "/:post_id" => "retorts#destroy"
     get    "/index"    => "retorts#index"
   end
 
@@ -36,12 +35,7 @@ after_initialize do
     end
 
     def update
-      @retort = Retort::Retort.new(post, current_user, params[:retort]).save
-      respond_with_retort
-    end
-
-    def destroy
-      @retort = Retort::Retort.new(post, current_user).save
+      retort.toggle_user(current_user)
       respond_with_retort
     end
 
@@ -55,8 +49,12 @@ after_initialize do
       @topic ||= Topic.find_by(id: params[:topic_id]) if params[:topic_id]
     end
 
+    def retort
+      @retort ||= Retort::Retort.find_by(post: post, retort: params[:retort])
+    end
+
     def retorts
-      @retorts ||= Retort::Retort.where(topic: topic || post.topic)
+      @retorts ||= Retort::Retort.for_topic(topic: topic || post.topic)
     end
 
     def verify_post_and_user
@@ -83,45 +81,40 @@ after_initialize do
   end
 
   class ::Retort::RetortSerializer < ActiveModel::Serializer
-    attributes :username, :post_id, :topic_id, :emoji
-    define_method :topic_id, -> { object.post.topic_id }
-    define_method :post_id,  -> { object.post.id }
-    define_method :username, -> { object.value.split('|').first }
-    define_method :emoji,    -> { object.value.split('|').last }
+    attributes :topic_id, :post_id, :usernames, :retort
+    define_method :topic_id,  -> { object.post.topic_id }
+    define_method :post_id,   -> { object.post_id }
+    define_method :usernames, -> { object.value }
+    define_method :retort,    -> { object.key.split('_').first }
   end
 
-  ::Retort::Retort = Struct.new(:post, :user, :retort) do
+  ::Retort::Retort = Struct.new(:detail) do
 
-    def self.where(post: nil, topic: nil, user: nil)
-      where_params = { extra: RETORT_PLUGIN_NAME }
-      where_params.merge!(key: :"retort_#{user.id}") if user
+    def self.for_topic(topic:)
+      PostDetail.joins(:post)
+                .where(extra: RETORT_PLUGIN_NAME)
+                .where('posts.topic_id' => topic.id)
+    end
 
-      if post
-        PostDetail.where(where_params.merge(post: post))
-      elsif topic
-        PostDetail.joins(:post).where(where_params).where('posts.topic_id = ?', topic.id)
+    def self.for_post(post:)
+      for_topic(topic: post.topic).where(post: post)
+    end
+
+    def self.find_by(post:, retort:)
+      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}_#{RETORT_PLUGIN_NAME}"))
+    end
+
+    def valid?
+      detail.valid?
+    end
+
+    def toggle_user(user)
+      new_value = if Array(detail.value).include? user.username
+        Array(detail.value) - Array(user.username)
       else
-        PostDetail.none
+        Array(detail.value) + Array(user.username)
       end
-    end
-
-    def save
-      if existing = PostDetail.find_by(detail_params)
-        retort.present? ? existing.update(value: value) : existing.destroy
-        existing
-      else
-        PostDetail.create(detail_params.merge(value: value))
-      end
-    end
-
-    private
-
-    def value
-      "#{user.username}|#{retort}"
-    end
-
-    def detail_params
-      { post: post, key: :"retort_#{user.id}", extra: RETORT_PLUGIN_NAME }
+      detail.update(value: new_value)
     end
   end
 
@@ -130,7 +123,7 @@ after_initialize do
     attributes :retorts
 
     def retorts
-      return ActiveModel::ArraySerializer.new(Retort::Retort.where(post: object), each_serializer: ::Retort::RetortSerializer).as_json
+      return ActiveModel::ArraySerializer.new(Retort::Retort.for_post(post: object), each_serializer: ::Retort::RetortSerializer).as_json
     end
   end
 end
