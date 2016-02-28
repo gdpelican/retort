@@ -125,4 +125,12 @@ after_initialize do
     end
   end
 
+  require_dependency 'post_serializer'
+  class ::PostSerializer
+    attributes :retorts
+
+    def retorts
+      return ActiveModel::ArraySerializer.new(Retort::Retort.where(post: object), each_serializer: ::Retort::RetortSerializer).as_json
+    end
+  end
 end
