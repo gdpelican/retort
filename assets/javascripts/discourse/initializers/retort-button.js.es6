@@ -36,12 +36,24 @@ function initializePlugin(api)
     const post = dec.getModel();
     if (post.retorts.length === 0) { return; }
 
+    var sentenceFor = function(retort) {
+      switch(retort.usernames.length) {
+        case 1:  return `${retort.usernames[0]} reacted with :${retort.retort}:`
+        case 2:  return `${retort.usernames[0]} and ${retort.usernames[1]} reacted with :${retort.retort}:`
+        default: return `${retort.usernames[0]}, ${retort.usernames[1]}, and ${retort.usernames.length - 2} others reacted with :${retort.retort}:`
+      }
+    }
+    var urlFor = Discourse.Emoji.urlFor
+
     var html = '<div class="post-retorts">';
 
-    post.retorts.forEach(function (item, index, enumerable){
+    post.retorts.forEach(function (item) {
       html += '<div class="post-retort">';
-      html += `<img src="${Discourse.Emoji.urlFor(item.emoji)}" class="emoji" alt=":${item.emoji}:">`;
-      html += `<span class="post-retort-tooltip">${item.username}</span>`;
+      html +=   `<img src="${urlFor(item.retort)}" class="emoji" alt=":${item.retort}:">`;
+      if (item.usernames.length > 1) {
+        html +=   `<span class="post-retort-count">${item.usernames.length}</span>`
+      }
+      html +=   `<span class="post-retort-tooltip">${sentenceFor(item)}</span>`;
       html += '</div>';
     });
 
@@ -72,13 +84,32 @@ function initializePlugin(api)
           data: { retort: retort }
         })
 
-        var updatedRetorts = post.retorts;
-        updatedRetorts.push({emoji: retort, post_id: post.id, topic_id: post.topic_id, username: self.currentUser.username});
-        post.setProperties({
-          retorts: updatedRetorts
-        });
+        var thisRetort = post.retorts[retort] || {
+          retort: retort,
+          post_id: post.id,
+          topic_id: topic.id,
+          usernames: []
+        }
+        var index = $.inArray(thisRetort, self.currentUser.username)
+        if (index > -1) {
+          thisRetort.usernames.splice(index)
+        } else {
+          thisRetort.usernames.push(self.currentUser.username)
+        }
+
+        post.retorts[retort] = thisRetort
+        post.setProperties({ retorts: post.retorts });
         self.scheduleRerender();
         return false
+      },
+
+      buildRetort: function(post, retort) {
+        return {
+          retort: retort,
+          post_id: post.id,
+          topic_id: post.topic_id,
+          usernames: []
+        }
       }
     })
   });
