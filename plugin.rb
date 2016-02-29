@@ -109,12 +109,17 @@ after_initialize do
     end
 
     def toggle_user(user)
-      new_value = if Array(detail.value).include? user.username
-        Array(detail.value) - Array(user.username)
+      new_value = if value.include? user.username
+        value - Array(user.username)
       else
-        Array(detail.value) + Array(user.username)
+        value + Array(user.username)
       end
-      detail.update(value: new_value)
+      detail.update(value: new_value.flatten)
+    end
+
+    def value
+      return [] unless detail.value
+      @value ||= Array(JSON.parse(detail.value))
     end
   end
 

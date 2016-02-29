@@ -50,6 +50,9 @@ function initializePlugin(api)
     post.retorts.forEach(function (item) {
       html += '<div class="post-retort">';
       html +=   `<img src="${urlFor(item.retort)}" class="emoji" alt=":${item.retort}:">`;
+      if (item.usernames.length > 1) {
+        html +=   `<span class="post-retort-count">${item.usernames.length}</span>`
+      }
       html +=   `<span class="post-retort-tooltip">${sentenceFor(item)}</span>`;
       html += '</div>';
     });
