@@ -1,3 +1,7 @@
+.topic-body {
+  overflow: visible;
+}
+
 .post-retort {
   background: #dfdfff;
   float: left;
@@ -20,7 +24,10 @@
   opacity: 0;
   transition: .5s opacity;
   position: absolute;
-  bottom: -30px;
+  top: 30px;
+  font-size: 12px;
+  text-align: center;
+  width: 140px;
   background: black;
   color: white;
   font-weight: bold;
@@ -29,6 +36,8 @@
   word-wrap: normal;
   left: 50%;
   transform: translate(-50%, 0);
+  z-index: 1;
+  pointer-events: none;
   &:after {
     content: ' ';
     width: 7px;

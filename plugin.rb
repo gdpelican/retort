@@ -84,8 +84,8 @@ after_initialize do
     attributes :topic_id, :post_id, :usernames, :retort
     define_method :topic_id,  -> { object.post.topic_id }
     define_method :post_id,   -> { object.post_id }
-    define_method :usernames, -> { object.value }
-    define_method :retort,    -> { object.key.split('_').first }
+    define_method :usernames, -> { JSON.parse(object.value) }
+    define_method :retort,    -> { object.key.split('|').first }
   end
 
   ::Retort::Retort = Struct.new(:detail) do
@@ -101,7 +101,7 @@ after_initialize do
     end
 
     def self.find_by(post:, retort:)
-      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}_#{RETORT_PLUGIN_NAME}"))
+      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{RETORT_PLUGIN_NAME}"))
     end
 
     def valid?
