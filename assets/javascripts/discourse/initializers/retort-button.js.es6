@@ -40,12 +40,15 @@ function initializePlugin(api)
       var post = _.find(controller.get('postsToRender.posts'), function(p) { return p.id == retort.post_id })
       var existing = _.findIndex(post.retorts, function(r) { return r.retort == retort.retort })
 
-      if (existing >= 0) {
+      if (existing == -1) {
+        post.retorts.addObject(retort)
+      } else if (retort.usernames.length > 0) {
         post.retorts[existing] = retort
       } else {
-        post.retorts.addObject(retort)
+        post.retorts.splice(existing, 1)
       }
       post.setProperties({ retorts: post.retorts })
+      Discourse.Retort.widgets[post.id].scheduleRerender()
     })
   })
 
@@ -53,6 +56,9 @@ function initializePlugin(api)
 
   api.decorateWidget('post-contents:after-cooked', dec => {
     const post = dec.getModel();
+    Discourse.Retort = Discourse.Retort || { widgets: {} }
+    Discourse.Retort.widgets[post.id] = dec.widget
+
     if (post.retorts.length === 0) { return; }
 
     var sentenceFor = function(retort) {

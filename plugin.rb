@@ -94,8 +94,13 @@ after_initialize do
         value - Array(user.username)
       else
         value + Array(user.username)
+      end.flatten
+
+      if new_value.any?
+        detail.update(value: new_value.flatten)
+      else
+        detail.destroy
       end
-      detail.update(value: new_value.flatten)
     end
 
     def value
