@@ -20,7 +20,6 @@ after_initialize do
 
   ::Retort::Engine.routes.draw do
     post   "/:post_id" => "retorts#update"
-    get    "/index"    => "retorts#index"
   end
 
   Discourse::Application.routes.append do
@@ -28,11 +27,7 @@ after_initialize do
   end
 
   class ::Retort::RetortsController < ApplicationController
-    before_filter :verify_post_and_user, only: [:update, :destroy]
-
-    def index
-      render json: serialized_retorts, root: false
-    end
+    before_filter :verify_post_and_user, only: :update
 
     def update
       retort.toggle_user(current_user)
@@ -45,16 +40,8 @@ after_initialize do
       @post ||= Post.find_by(id: params[:post_id]) if params[:post_id]
     end
 
-    def topic
-      @topic ||= Topic.find_by(id: params[:topic_id]) if params[:topic_id]
-    end
-
     def retort
       @retort ||= Retort::Retort.find_by(post: post, retort: params[:retort])
-    end
-
-    def retorts
-      @retorts ||= Retort::Retort.for_topic(topic: topic || post.topic)
     end
 
     def verify_post_and_user
@@ -63,16 +50,16 @@ after_initialize do
     end
 
     def respond_with_retort
-      if @retort && @retort.valid?
-        MessageBus.publish "/retort/topics/#{params[:topic_id] || post.topic_id}", serialized_retorts
+      if retort && retort.valid?
+        MessageBus.publish "/retort/topics/#{params[:topic_id] || post.topic_id}", serialized_retort
         render json: { success: :ok }
       else
         respond_with_unprocessable("Unable to save that retort. Please try again")
       end
     end
 
-    def serialized_retorts
-      ActiveModel::ArraySerializer.new(retorts, each_serializer: ::Retort::RetortSerializer).as_json
+    def serialized_retort
+      ::Retort::RetortSerializer.new(retort.detail, root: false).as_json
     end
 
     def respond_with_unprocessable(error)
@@ -81,8 +68,7 @@ after_initialize do
   end
 
   class ::Retort::RetortSerializer < ActiveModel::Serializer
-    attributes :topic_id, :post_id, :usernames, :retort
-    define_method :topic_id,  -> { object.post.topic_id }
+    attributes :post_id, :usernames, :retort
     define_method :post_id,   -> { object.post_id }
     define_method :usernames, -> { JSON.parse(object.value) }
     define_method :retort,    -> { object.key.split('|').first }
@@ -90,14 +76,9 @@ after_initialize do
 
   ::Retort::Retort = Struct.new(:detail) do
 
-    def self.for_topic(topic:)
-      PostDetail.joins(:post)
-                .where(extra: RETORT_PLUGIN_NAME)
-                .where('posts.topic_id' => topic.id)
-    end
-
     def self.for_post(post:)
-      for_topic(topic: post.topic).where(post: post)
+      PostDetail.where(extra: RETORT_PLUGIN_NAME,
+                       post: post)
     end
 
     def self.find_by(post:, retort:)
