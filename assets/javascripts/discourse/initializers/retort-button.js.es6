@@ -1,8 +1,8 @@
 import { withPluginApi } from 'discourse/lib/plugin-api';
 import PostMenuComponent from 'discourse/components/post-menu';
 import { Button } from 'discourse/components/post-menu';
-import { default as computed, observes } from 'ember-addons/ember-computed-decorators';
 import { showSelector } from "discourse/lib/emoji/emoji-toolbar";
+import TopicRoute from 'discourse/routes/topic';
 
 function priorToApi(container)
 {
@@ -30,10 +30,35 @@ function priorToApi(container)
 
 function initializePlugin(api)
 {
+
+  const container    = api.container
+  const siteSettings = container.lookup('site-settings:main');
+
+  TopicRoute.on("setupTopicController", function(event) {
+    const controller = event.controller
+    controller.messageBus.subscribe('/retort/topics/' + controller.model.id, function(retort) {
+      var post = _.find(controller.get('postsToRender.posts'), function(p) { return p.id == retort.post_id })
+      var existing = _.findIndex(post.retorts, function(r) { return r.retort == retort.retort })
+
+      if (existing == -1) {
+        post.retorts.addObject(retort)
+      } else if (retort.usernames.length > 0) {
+        post.retorts[existing] = retort
+      } else {
+        post.retorts.splice(existing, 1)
+      }
+      post.setProperties({ retorts: post.retorts })
+      Discourse.Retort.widgets[post.id].scheduleRerender()
+    })
+  })
+
   api.includePostAttributes('retorts');
 
   api.decorateWidget('post-contents:after-cooked', dec => {
     const post = dec.getModel();
+    Discourse.Retort = Discourse.Retort || { widgets: {} }
+    Discourse.Retort.widgets[post.id] = dec.widget
+
     if (post.retorts.length === 0) { return; }
 
     var sentenceFor = function(retort) {
@@ -61,7 +86,6 @@ function initializePlugin(api)
     return dec.rawHtml(html);
   })
 
-  const siteSettings = api.container.lookup('site-settings:main');
   if (!api._currentUser || !siteSettings.retort_enabled) { return; }
 
   api.addPostMenuButton('retort', attrs => {
@@ -75,41 +99,13 @@ function initializePlugin(api)
 
   api.attachWidgetAction('post-menu', 'clickRetort', function() {
     const post = this.findAncestorModel();
-    const self = this;
     showSelector({
-      container: self.container,
+      container: container,
       onSelect: function(retort) {
         Discourse.ajax('/retorts/' + post.id + '.json', {
           type: 'POST',
           data: { retort: retort }
         })
-
-        var thisRetort = post.retorts[retort] || {
-          retort: retort,
-          post_id: post.id,
-          topic_id: topic.id,
-          usernames: []
-        }
-        var index = $.inArray(thisRetort, self.currentUser.username)
-        if (index > -1) {
-          thisRetort.usernames.splice(index)
-        } else {
-          thisRetort.usernames.push(self.currentUser.username)
-        }
-
-        post.retorts[retort] = thisRetort
-        post.setProperties({ retorts: post.retorts });
-        self.scheduleRerender();
-        return false
-      },
-
-      buildRetort: function(post, retort) {
-        return {
-          retort: retort,
-          post_id: post.id,
-          topic_id: post.topic_id,
-          usernames: []
-        }
       }
     })
   });
