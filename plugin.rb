@@ -70,7 +70,7 @@ after_initialize do
   class ::Retort::RetortSerializer < ActiveModel::Serializer
     attributes :post_id, :usernames, :retort
     define_method :post_id,   -> { object.post_id }
-    define_method :usernames, -> { JSON.parse(object.value) }
+    define_method :usernames, -> { object.persisted? ? JSON.parse(object.value) : [] }
     define_method :retort,    -> { object.key.split('|').first }
   end
 
