@@ -76,12 +76,12 @@ after_initialize do
 
   ::Retort::Retort = Struct.new(:detail) do
 
-    def self.for_post(post:)
+    def self.for_post(post: nil)
       PostDetail.where(extra: RETORT_PLUGIN_NAME,
                        post: post)
     end
 
-    def self.find_by(post:, retort:)
+    def self.find_by(post: nil, retort: nil)
       new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{RETORT_PLUGIN_NAME}"))
     end
 
