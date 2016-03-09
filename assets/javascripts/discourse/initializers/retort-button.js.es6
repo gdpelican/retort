@@ -59,6 +59,7 @@ function initializePlugin(api)
     Discourse.Retort = Discourse.Retort || { widgets: {} }
     Discourse.Retort.widgets[post.id] = dec.widget
 
+    if (!post.retorts) { post.setProperties({ retorts: [] }) }
     if (post.retorts.length === 0) { return; }
 
     var sentenceFor = function(retort) {
