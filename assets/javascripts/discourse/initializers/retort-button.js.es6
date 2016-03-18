@@ -50,9 +50,37 @@ function initializePlugin(api)
       post.setProperties({ retorts: post.retorts })
       Discourse.Retort.widgets[post.id].scheduleRerender()
     })
-  })
+  });
 
-  api.includePostAttributes('retorts');
+  let toggleRetort = function(post, retort) {
+    return function() {
+      Discourse.ajax('/retorts/' + post.id + '.json', {
+        type: 'POST',
+        data: { retort: retort }
+      })
+    }
+  };
+
+  let renderRetorts = function(dec, post) {
+    let rendered = _.map(post.retorts, function(item) {
+      let itemCount = item.usernames.length > 1 ? item.usernames.length.toString() : ""
+      return dec.h('button.post-retort', { onclick: toggleRetort(post, item.retort) }, [
+               dec.h('img.emoji', { src: Discourse.Emoji.urlFor(item.retort), alt: ':'+item.retort+':' }),
+               dec.h('span.post-retort-count', itemCount),
+               dec.h('span.post-retort-tooltip', sentenceFor(item))
+             ]);
+    });
+
+    return dec.h('div.post-retorts', rendered);
+  };
+
+  let sentenceFor = function(retort) {
+    switch(retort.usernames.length) {
+      case 1:  return `${retort.usernames[0]} reacted with :${retort.retort}:`
+      case 2:  return `${retort.usernames[0]} and ${retort.usernames[1]} reacted with :${retort.retort}:`
+      default: return `${retort.usernames[0]}, ${retort.usernames[1]}, and ${retort.usernames.length - 2} others reacted with :${retort.retort}:`
+    }
+  };
 
   api.decorateWidget('post-contents:after-cooked', dec => {
     const post = dec.getModel();
@@ -62,29 +90,7 @@ function initializePlugin(api)
     if (!post.retorts) { post.setProperties({ retorts: [] }) }
     if (post.retorts.length === 0) { return; }
 
-    var sentenceFor = function(retort) {
-      switch(retort.usernames.length) {
-        case 1:  return `${retort.usernames[0]} reacted with :${retort.retort}:`
-        case 2:  return `${retort.usernames[0]} and ${retort.usernames[1]} reacted with :${retort.retort}:`
-        default: return `${retort.usernames[0]}, ${retort.usernames[1]}, and ${retort.usernames.length - 2} others reacted with :${retort.retort}:`
-      }
-    }
-    var urlFor = Discourse.Emoji.urlFor
-
-    var html = '<div class="post-retorts">';
-
-    post.retorts.forEach(function (item) {
-      html += '<div class="post-retort">';
-      html +=   `<img src="${urlFor(item.retort)}" class="emoji" alt=":${item.retort}:">`;
-      if (item.usernames.length > 1) {
-        html +=   `<span class="post-retort-count">${item.usernames.length}</span>`
-      }
-      html +=   `<span class="post-retort-tooltip">${sentenceFor(item)}</span>`;
-      html += '</div>';
-    });
-
-    html += '</div>';
-    return dec.rawHtml(html);
+    return renderRetorts(dec, post);
   })
 
   if (!api._currentUser || !siteSettings.retort_enabled) { return; }
