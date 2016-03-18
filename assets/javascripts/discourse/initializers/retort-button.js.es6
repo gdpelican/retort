@@ -63,11 +63,12 @@ function initializePlugin(api)
 
   let renderRetorts = function(dec, post) {
     let rendered = _.map(post.retorts, function(item) {
-      let itemCount = item.usernames.length > 1 ? item.usernames.length : ""
-      return dec.h('button.post-retort', { onclick: toggleRetort(post, item.retort) },
-              [dec.h('img.emoji', { src: Discourse.Emoji.urlFor(item.retort), alt: ':'+item.retort+':' },
-                 dec.h('span.port-retort-count', itemCount)),
-               dec.h('span.post-retort-tooltip', sentenceFor(item))]);
+      let itemCount = item.usernames.length > 1 ? item.usernames.length.toString() : ""
+      return dec.h('button.post-retort', { onclick: toggleRetort(post, item.retort) }, [
+               dec.h('img.emoji', { src: Discourse.Emoji.urlFor(item.retort), alt: ':'+item.retort+':' }),
+               dec.h('span.post-retort-count', itemCount),
+               dec.h('span.post-retort-tooltip', sentenceFor(item))
+             ]);
     });
 
     return dec.h('div.post-retorts', rendered);
