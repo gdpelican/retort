@@ -1,6 +1,6 @@
 # name: retort
 # about: Reactions plugin for Discourse
-# version: 0.1.0
+# version: 1.0.0
 # authors: James Kiesel (gdpelican)
 # url: https://github.com/gdpelican/retort
 
@@ -68,10 +68,10 @@ after_initialize do
   end
 
   class ::Retort::RetortSerializer < ActiveModel::Serializer
-    attributes :post_id, :usernames, :retort
+    attributes :post_id, :usernames, :emoji
     define_method :post_id,   -> { object.post_id }
     define_method :usernames, -> { object.persisted? ? JSON.parse(object.value) : [] }
-    define_method :retort,    -> { object.key.split('|').first }
+    define_method :emoji,     -> { object.key.split('|').first }
   end
 
   ::Retort::Retort = Struct.new(:detail) do

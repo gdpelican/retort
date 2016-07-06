@@ -60,3 +60,41 @@
     background: black;
   }
 }
+
+.retort-selector {
+  background-color: transparent;
+  pointer-events: none;
+  .emoji-table-wrapper {
+    min-height: initial;
+    min-width: initial;
+    background-color: transparent;
+  }
+  .emoji-page {
+    background: white;
+    pointer-events: all;
+    margin: auto;
+    tr {
+      display: flex;
+      justify-content: space-around;
+      a {
+        margin: 10px;
+        img.emoji {
+          width: 40px;
+          height: 40px;
+        }
+      }
+    }
+  }
+  img.emoji {
+    width: 40px;
+    height: 40px;
+  }
+  .toolbar, .info, .nav, .clearfix { display: none; }
+}
+
+@media (max-width: 700px) {
+  .retort-selector .emoji-page tr a img.emoji {
+    width: 25px;
+    height: 25px;
+  }
+}
