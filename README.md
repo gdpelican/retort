@@ -7,19 +7,34 @@ Check out a quick gif of it in action [here](http://recordit.co/7vHi2j74Rg.gif)!
 ### Installation
 - Edit your web template and add the project clone url. (https://meta.discourse.org/t/install-a-plugin/19157)
 - Rebuild your web container so that the plugin installs.
-- Visit `admin/site_settings/category/all_results`, and look for the `post_menu` option. Insert a `retort` action at the end of the list, like this:
-
-[![admin_panel](screenshots/admin_panel.png)]()
 
 You're done!
 
-### Development Roadmap
-There's a few things I'd like to add to this plugin as time allows; feel free to jump in and help if you like!
+### Limiting the possible emoji set
 
-- Allow grouping of similar retorts together
-- Order the retorts on a post in some intelligent way
-- Allow user to remove their reaction (instead of just being able to change it)
-- More efficient / parsing of retorts
+Some communities will want to limit the possible reactions to just a few, rather than all possible emojis. Retort now supports this!
+
+[![limited reactions](screenshots/limited_reactions.png)]()
+
+In order to use a limited emoji set, simply visit `admin/site_settings/category/plugins`, and check the box which says 'Constrain the list of reactions to the list specified below'.
+
+[![admin_panel](screenshots/limited_emoji_set.png)]()
+
+Then, enter the list of emojis you'd like to support, delimited by the '|' character.
+(So, for example, if you only wanted to support thumbs up / thumbs down reactions, you'd put in `+1|-1`)
+
+Since I have no idea how many custom emojis you're interested in, it's possible for the new emoji modal to look a little, well, like this:
+
+[![looks like poop!](screenshots/this_looks_bad.png)]()
+
+But never fear! Simply enter the number of emojis you'd like appear per row into the 'retort emojis per row' site setting to adjust the layout appropriately.
+
+[![emojis per row!](screenshots/emojis_per_row.png)]()
+
+Voila:
+[![looks like happiness!](screenshots/this_looks_great.png)]()
+
+Also, feel free to style elements underneath the `.retort-selector` class in `Admin > Customize > HTML/CSS`, if you need further customizations like emoji size, spacing, etc.
 
 ### Contributing
 
