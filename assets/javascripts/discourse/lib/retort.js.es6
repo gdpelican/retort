@@ -5,6 +5,7 @@ export default Ember.Object.create({
     let existing   = _.findIndex(post.retorts, r => { return r.emoji == data.emoji })
 
     if (existing == -1) {
+      if (!post.retorts) { post.setProperties({ retorts: [] }) }
       post.retorts.addObject(data)
     } else if (data.usernames.length > 0) {
       post.retorts[existing] = data

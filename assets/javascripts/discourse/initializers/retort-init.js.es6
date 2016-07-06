@@ -5,6 +5,8 @@ import Retort from '../lib/retort'
 
 function initializePlugin(api) {
 
+  const siteSettings = api.container.lookup('site-settings:main')
+
   TopicRoute.on("setupTopicController", function(event) {
     let controller = event.controller
     Retort.set('topicController', controller)
@@ -24,7 +26,7 @@ function initializePlugin(api) {
     })
   })
 
-  if (!api._currentUser || !api.container.lookup('site-settings:main').retort_enabled) { return }
+  if (!api._currentUser || !siteSettings.retort_enabled) { return }
 
   api.addPostMenuButton('retort', attrs => {
     return {
@@ -37,11 +39,23 @@ function initializePlugin(api) {
 
   api.attachWidgetAction('post-menu', 'clickRetort', function() {
     let post = this.findAncestorModel()
+
     showSelector({
-      container: api.container,
-      onSelect:  emoji => { Retort.updateRetort(post, emoji) }
+      page:       siteSettings.retort_limited_emoji_set ? 'retort' : null,
+      modalClass: siteSettings.retort_limited_emoji_set ? 'retort-selector' : null,
+      container:  api.container,
+      onSelect:   emoji => { Retort.updateRetort(post, emoji) }
     })
   })
+
+  if (siteSettings.retort_limited_emoji_set) {
+    Discourse.Emoji.groups.push({
+      name: 'retort',
+      fullName: 'Retorts',
+      tabicon: 'smiley',
+      icons: siteSettings.retort_allowed_emojis.split('|')
+    })
+  }
 }
 
 export default {
