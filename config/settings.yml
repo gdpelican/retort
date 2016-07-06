@@ -2,3 +2,9 @@ plugins:
   retort_enabled:
     default: true
     client: true
+  retort_limited_emoji_set:
+    default: false
+    client: true
+  retort_allowed_emojis:
+    default: "relaxed|laughing|+1|heart|rage|poop"
+    client: true
