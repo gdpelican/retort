@@ -68,10 +68,10 @@ after_initialize do
   end
 
   class ::Retort::RetortSerializer < ActiveModel::Serializer
-    attributes :post_id, :usernames, :retort
+    attributes :post_id, :usernames, :emoji
     define_method :post_id,   -> { object.post_id }
     define_method :usernames, -> { object.persisted? ? JSON.parse(object.value) : [] }
-    define_method :retort,    -> { object.key.split('|').first }
+    define_method :emoji,     -> { object.key.split('|').first }
   end
 
   ::Retort::Retort = Struct.new(:detail) do
