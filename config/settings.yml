@@ -11,3 +11,5 @@ plugins:
   retort_emojis_per_row:
     default: null
     client: true
+  retort_allow_multiple_reactions:
+    default: true

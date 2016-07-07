@@ -51,15 +51,15 @@ after_initialize do
 
     def respond_with_retort
       if retort && retort.valid?
-        MessageBus.publish "/retort/topics/#{params[:topic_id] || post.topic_id}", serialized_retort
+        MessageBus.publish "/retort/topics/#{params[:topic_id] || post.topic_id}", serialized_post_retorts
         render json: { success: :ok }
       else
         respond_with_unprocessable("Unable to save that retort. Please try again")
       end
     end
 
-    def serialized_retort
-      ::Retort::RetortSerializer.new(retort.detail, root: false).as_json
+    def serialized_post_retorts
+      ::PostSerializer.new(post.reload, scope: Guardian.new, root: false).as_json
     end
 
     def respond_with_unprocessable(error)
@@ -81,6 +81,11 @@ after_initialize do
                        post: post)
     end
 
+    def self.for_user(user: nil, post: nil)
+      for_post(post: post).map    { |r| new(r) }
+                          .select { |r| r.value.include?(user.username) }
+    end
+
     def self.find_by(post: nil, retort: nil)
       new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{RETORT_PLUGIN_NAME}"))
     end
@@ -93,6 +98,7 @@ after_initialize do
       new_value = if value.include? user.username
         value - Array(user.username)
       else
+        purge_other_retorts!(user) unless SiteSetting.retort_allow_multiple_reactions
         value + Array(user.username)
       end.flatten
 
@@ -101,6 +107,10 @@ after_initialize do
       else
         detail.destroy
       end
+    end
+
+    def purge_other_retorts!(user)
+      self.class.for_user(user: user, post: detail.post).map { |r| r.toggle_user(user) }
     end
 
     def value

@@ -1,20 +1,8 @@
 export default Ember.Object.create({
 
   callback(data) {
-    let post       = this.postFor(data.post_id)
-    let existing   = _.findIndex(post.retorts, r => { return r.emoji == data.emoji })
-
-    if (existing == -1) {
-      if (!post.retorts) { post.setProperties({ retorts: [] }) }
-      post.retorts.addObject(data)
-    } else if (data.usernames.length > 0) {
-      post.retorts[existing] = data
-    } else {
-      post.retorts.splice(existing, 1)
-    }
-
-    post.setProperties({ retorts: post.retorts })
-    this.get(`widgets.${post.id}`).scheduleRerender()
+    this.postFor(data.id).setProperties({ retorts: data.retorts })
+    this.get(`widgets.${data.id}`).scheduleRerender()
   },
 
   postFor(id) {
