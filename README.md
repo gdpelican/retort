@@ -36,6 +36,10 @@ Voila:
 
 Also, feel free to style elements underneath the `.retort-selector` class in `Admin > Customize > HTML/CSS`, if you need further customizations like emoji size, spacing, etc.
 
+### Limiting the number of reactions per post
+
+There's an additional site setting, 'retort allow multiple reactions', which determines whether users can react to a single post multiple times or not. (It is enabled by default). If you only want users to be able to create one reaction per post (if you're using Retort as a voting system, for example), set this option to false.
+
 ### Contributing
 
 Pull requests welcome! To contribute:
