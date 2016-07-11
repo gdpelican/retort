@@ -1,3 +1,5 @@
+import ajax from 'discourse/lib/ajax'
+
 export default Ember.Object.create({
 
   callback(data) {
@@ -15,7 +17,7 @@ export default Ember.Object.create({
   },
 
   updateRetort(post, retort) {
-    Discourse.ajax(`/retorts/${post.id}.json`, {
+    ajax(`/retorts/${post.id}.json`, {
       type: 'POST',
       data: { retort: retort }
     })

@@ -1,4 +1,5 @@
 import { h } from 'virtual-dom'
+import { emojiUrlFor } from 'discourse/lib/text'
 
 export default Ember.Object.create({
   render(widget) {
@@ -7,7 +8,7 @@ export default Ember.Object.create({
   },
 
   emoji() {
-    return h('img.emoji', { src: Discourse.Emoji.urlFor(this.state.emoji), alt: `:${this.state.emoji}:` })
+    return h('img.emoji', { src: emojiUrlFor(this.state.emoji), alt: `:${this.state.emoji}:` })
   },
 
   count() {

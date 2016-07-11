@@ -1,7 +1,8 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
-import { showSelector } from "discourse/lib/emoji/emoji-toolbar"
+import { showSelector } from "discourse/lib/emoji/toolbar"
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
+import groups from 'discourse/lib/emoji/groups'
 
 function initializePlugin(api) {
 
@@ -50,7 +51,7 @@ function initializePlugin(api) {
   })
 
   if (siteSettings.retort_limited_emoji_set) {
-    Discourse.Emoji.groups.push({
+    groups.push({
       name: 'retort',
       fullName: 'Retorts',
       tabicon: 'smiley',
