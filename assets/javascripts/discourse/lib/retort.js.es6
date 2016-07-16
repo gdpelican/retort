@@ -1,4 +1,4 @@
-import ajax from 'discourse/lib/ajax'
+import { ajax } from 'discourse/lib/ajax'
 
 export default Ember.Object.create({
 
