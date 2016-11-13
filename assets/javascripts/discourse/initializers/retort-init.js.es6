@@ -45,7 +45,7 @@ function initializePlugin(api) {
       page:       siteSettings.retort_limited_emoji_set ? 'retort' : null,
       modalClass: siteSettings.retort_limited_emoji_set ? 'retort-selector' : null,
       perRow:     siteSettings.retort_limited_emoji_set ? parseInt(siteSettings.retort_emojis_per_row) : null,
-      container:  api.container,
+      register:  api.container,
       onSelect:   emoji => { Retort.updateRetort(post, emoji) }
     })
   })
