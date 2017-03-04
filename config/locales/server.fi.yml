@@ -1,0 +1,7 @@
+fi:
+  site_settings:
+    retort_enabled: "Ota käyttöön Retort-reaktiolisäosa."
+    retort_limited_emoji_set: "Rajoita mahdolliset reaktiot alla olevaan listaan"
+    retort_allowed_emojis: "Luettele emojit, jotka haluat sallia käyttäen '|'-merkkiä erottimena"
+    retort_emojis_per_row: "Kuinka monta mukautettua emojia näytetään riviä kohden (Jätä tyhjäksi, jos haluat kaikkien näkymvän samalla rivillä)"
+    retort_allow_multiple_reactions: "Salli käyttäjän reagoida samaan viestiin useita kertoja"
