@@ -27,7 +27,7 @@ function initializePlugin(api) {
     })
   })
 
-  if (!api._currentUser || !siteSettings.retort_enabled) { return }
+  if (!Discourse.User.current() || !siteSettings.retort_enabled) { return }
 
   api.addPostMenuButton('retort', attrs => {
     return {
@@ -63,6 +63,6 @@ function initializePlugin(api) {
 export default {
   name: 'retort-button',
   initialize: function() {
-    withPluginApi('0.1', api => initializePlugin(api))
+    withPluginApi('0.8.6', api => initializePlugin(api))
   }
 }
