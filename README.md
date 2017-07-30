@@ -23,18 +23,7 @@ In order to use a limited emoji set, simply visit `admin/site_settings/category/
 Then, enter the list of emojis you'd like to support, delimited by the '|' character.
 (So, for example, if you only wanted to support thumbs up / thumbs down reactions, you'd put in `+1|-1`)
 
-Since I have no idea how many custom emojis you're interested in, it's possible for the new emoji modal to look a little, well, like this:
-
-[![looks like poop!](screenshots/this_looks_bad.png)]()
-
-But never fear! Simply enter the number of emojis you'd like appear per row into the 'retort emojis per row' site setting to adjust the layout appropriately.
-
-[![emojis per row!](screenshots/emojis_per_row.png)]()
-
-Voila:
-[![looks like happiness!](screenshots/this_looks_great.png)]()
-
-Also, feel free to style elements underneath the `.retort-selector` class in `Admin > Customize > HTML/CSS`, if you need further customizations like emoji size, spacing, etc.
+Feel free to style elements underneath the `.retort-picker` class in `Admin > Customize > HTML/CSS`, if you need further customizations like emoji size, spacing, etc.
 
 ### Limiting the number of reactions per post
 

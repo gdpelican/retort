@@ -8,8 +8,5 @@ plugins:
   retort_allowed_emojis:
     default: "relaxed|laughing|+1|heart|rage|poop"
     client: true
-  retort_emojis_per_row:
-    default: null
-    client: true
   retort_allow_multiple_reactions:
     default: true

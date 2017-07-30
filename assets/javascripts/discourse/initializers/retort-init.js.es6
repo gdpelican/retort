@@ -1,8 +1,8 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
-import { showSelector } from "discourse/lib/emoji/toolbar"
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
-import groups from 'discourse/lib/emoji/groups'
+import { registerEmoji } from 'pretty-text/emoji'
+import { emojiUrlFor } from 'discourse/lib/text'
 
 function initializePlugin(api) {
 
@@ -38,26 +38,21 @@ function initializePlugin(api) {
     }
   })
 
-  api.attachWidgetAction('post-menu', 'clickRetort', function() {
-    let post = this.findAncestorModel()
-
-    showSelector({
-      page:       siteSettings.retort_limited_emoji_set ? 'retort' : null,
-      modalClass: siteSettings.retort_limited_emoji_set ? 'retort-selector' : null,
-      perRow:     siteSettings.retort_limited_emoji_set ? parseInt(siteSettings.retort_emojis_per_row) : null,
-      register:  api.container,
-      onSelect:   emoji => { Retort.updateRetort(post, emoji) }
-    })
+  api.decorateWidget('post-menu:after', helper => {
+    return helper.connect({ component: 'emoji-picker-wrapper' })
   })
 
-  if (siteSettings.retort_limited_emoji_set) {
-    groups.push({
-      name: 'retort',
-      fullName: 'Retorts',
-      tabicon: 'smiley',
-      icons: siteSettings.retort_allowed_emojis.split('|')
+  api.attachWidgetAction('post-menu', 'clickRetort', function() {
+    let post = this.findAncestorModel()
+    post.set('emojis', {
+      active: !post.get('emojis.active'),
+      limitOptions: siteSettings.retort_limited_emoji_set,
+      onSelect: function(code) {
+        post.set('emojis.active', false)
+        return Retort.updateRetort(post, code)
+      }
     })
-  }
+  })
 }
 
 export default {

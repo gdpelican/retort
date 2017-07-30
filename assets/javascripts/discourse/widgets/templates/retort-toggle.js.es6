@@ -13,11 +13,11 @@ export default Ember.Object.create({
 
   count() {
     if (this.state.usernames.length < 2) { return }
-    return h('span.post-retort-count', this.state.usernames.length.toString())
+    return h('span.post-retort__count', this.state.usernames.length.toString())
   },
 
   tooltip() {
-    return h('span.post-retort-tooltip', this.sentence())
+    return h('span.post-retort__tooltip', this.sentence())
   },
 
   sentence() {
