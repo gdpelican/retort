@@ -16,7 +16,7 @@ export default createWidget('retort-toggle', {
   },
 
   click() {
-    Retort.updateRetort(this.state.post, this.state.emoji)
+    Retort.updateRetort(this.state.post.id, this.state.emoji)
   },
 
   html() { return template.render(this) }

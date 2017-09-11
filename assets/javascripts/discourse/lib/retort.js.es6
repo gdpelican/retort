@@ -16,10 +16,25 @@ export default Ember.Object.create({
     this.set(`widgets.${helper.getModel().id}`, helper.widget)
   },
 
-  updateRetort(post, retort) {
-    ajax(`/retorts/${post.id}.json`, {
+  updateRetort(postId, retort) {
+    return ajax(`/retorts/${postId}.json`, {
       type: 'POST',
       data: { retort: retort }
     })
+  },
+
+  openPicker(post) {
+    this.set('picker.active', true)
+    this.set('picker.postId', post.id)
+  },
+
+  setPicker(picker) {
+    this.set('picker', picker)
+    this.set('picker.onSelect', (retort) => {
+      this.updateRetort(picker.postId, retort).then(() => {
+        this.set('picker.active', false)
+      })
+    })
+    this.set('picker.limitOptions', Discourse.SiteSettings.retort_limited_emoji_set)
   }
 })

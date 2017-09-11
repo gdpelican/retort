@@ -38,20 +38,8 @@ function initializePlugin(api) {
     }
   })
 
-  api.decorateWidget('post-menu:after', helper => {
-    return helper.connect({ component: 'emoji-picker-wrapper' })
-  })
-
   api.attachWidgetAction('post-menu', 'clickRetort', function() {
-    let post = this.findAncestorModel()
-    post.set('emojis', {
-      active: !post.get('emojis.active'),
-      limitOptions: siteSettings.retort_limited_emoji_set,
-      onSelect: function(code) {
-        post.set('emojis.active', false)
-        return Retort.updateRetort(post, code)
-      }
-    })
+    Retort.openPicker(this.findAncestorModel())
   })
 }
 

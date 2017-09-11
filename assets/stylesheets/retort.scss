@@ -1,6 +1,6 @@
-.topic-body { overflow: visible; }
-.post-menu-area { clear: both; }
-.topic-avatar { position: static; }
+// .topic-body { overflow: visible; }
+// .post-menu-area { clear: both; }
+// .topic-avatar { position: static; }
 
 .post-retort {
   background: #dfdfff;
@@ -55,38 +55,21 @@
   }
 }
 
-.emoji-picker-wrapper {
-  display: none;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.retort__emoji-picker-wrapper {
+  &--limited .emoji-picker {
+    height: auto !important;
+    flex-wrap: wrap;
+    justify-content: center;
 
-  > .ember-view {
-    width: 400px;
-    height: 300px;
-  }
-
-  .emoji-picker { bottom: auto !important; }
-
-  &--limited {
-
-    .emoji-picker {
-      height: auto !important;
-      flex-wrap: wrap;
-      justify-content: center;
-
-      button.emoji {
-        display: block;
-        width: 40px;
-        height: 40px;
-        background-size: 40px;
-        @media (max-width: 700px) {
-          width: 25px;
-          height: 25px;
-          background-size: 25px;
-        }
+    button.emoji {
+      display: block;
+      width: 40px;
+      height: 40px;
+      background-size: 40px;
+      @media (max-width: 700px) {
+        width: 25px;
+        height: 25px;
+        background-size: 25px;
       }
     }
   }
@@ -96,5 +79,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+
+    > .ember-view {
+      width: 400px;
+      height: 300px;
+    }
+
+    .emoji-picker { bottom: auto !important; }
   }
 }
