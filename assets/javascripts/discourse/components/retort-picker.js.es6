@@ -9,6 +9,11 @@ export default EmojiPicker.extend({
     this._super();
   },
 
+  close() {
+    this._super();
+    this.willDestroyElement();
+  },
+  
   _scrollTo() {
     if (siteSettings.retort_limited_emoji_set) {
       return
