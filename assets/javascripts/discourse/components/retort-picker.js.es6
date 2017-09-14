@@ -15,7 +15,7 @@ export default EmojiPicker.extend({
 
   _loadCategoriesEmojis() {
     if (siteSettings.retort_limited_emoji_set) {
-      const $picker = $('.emoji-picker')
+      const $picker = $('.retort-picker.emoji-picker')
       $picker.html("")
       siteSettings.retort_allowed_emojis.split('|').map((code) => {
         $picker.append(`<button type="button" title="${code}" class="emoji" />`)
