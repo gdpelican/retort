@@ -4,16 +4,6 @@ import { emojiUrlFor } from 'discourse/lib/text'
 const siteSettings = Discourse.SiteSettings
 
 export default EmojiPicker.extend({
-  show() {
-    this.didInsertElement();
-    this._super();
-  },
-
-  close() {
-    this._super();
-    this.willDestroyElement();
-  },
-  
   _scrollTo() {
     if (siteSettings.retort_limited_emoji_set) {
       return
