@@ -27,7 +27,7 @@ after_initialize do
   end
 
   class ::Retort::RetortsController < ApplicationController
-    before_filter :verify_post_and_user, only: :update
+    before_action :verify_post_and_user, only: :update
 
     def update
       retort.toggle_user(current_user)
