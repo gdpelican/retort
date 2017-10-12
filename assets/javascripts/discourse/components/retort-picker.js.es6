@@ -18,8 +18,12 @@ export default EmojiPicker.extend({
       $picker.html('<div class="emoji-picker-wrapper"></div>')
       const $wrapper = this.$('.emoji-picker-wrapper')
       siteSettings.retort_allowed_emojis.split('|').map((code) => {
-        $wrapper.append(`<button type="button" title="${code}" class="emoji" />`)
-        this.$(`button.emoji[title="${code}"]`).css("background-image", `url("${emojiUrlFor(code)}")`)
+        if (code.trim() === '') {
+          $wrapper.append('<br />')
+        } else {
+          $wrapper.append(`<button type="button" title="${code}" class="emoji" />`)
+          this.$(`button.emoji[title="${code}"]`).css("background-image", `url("${emojiUrlFor(code)}")`)
+        }
       })
       this._bindEmojiClick($picker);
     } else {
