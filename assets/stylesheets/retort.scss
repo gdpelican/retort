@@ -91,6 +91,12 @@
       height: 300px;
     }
 
-    .emoji-picker { bottom: auto !important; }
+    .emoji-picker {
+      bottom: auto !important; 
+      
+      .emoji-picker-wrapper {
+        text-align: center;
+      }
+    }
   }
 }
