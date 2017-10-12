@@ -15,9 +15,10 @@ export default EmojiPicker.extend({
   _loadCategoriesEmojis() {
     if (siteSettings.retort_limited_emoji_set) {
       const $picker = this.$('.emoji-picker')
-      $picker.html("")
+      $picker.html('<div class="emoji-picker-wrapper"></div>')
+      const $wrapper = this.$('.emoji-picker-wrapper')
       siteSettings.retort_allowed_emojis.split('|').map((code) => {
-        $picker.append(`<button type="button" title="${code}" class="emoji" />`)
+        $wrapper.append(`<button type="button" title="${code}" class="emoji" />`)
         this.$(`button.emoji[title="${code}"]`).css("background-image", `url("${emojiUrlFor(code)}")`)
       })
       this._bindEmojiClick($picker);
