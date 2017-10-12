@@ -96,6 +96,10 @@
       
       .emoji-picker-wrapper {
         text-align: center;
+        
+        button.emoji {
+          display: inline-block;
+        }
       }
     }
   }
