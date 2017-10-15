@@ -4,11 +4,11 @@ import { emojiUrlFor } from 'discourse/lib/text'
 const siteSettings = Discourse.SiteSettings
 
 export default EmojiPicker.extend({
-  _scrollTo() {
+  _scrollTo(y) {
     if (siteSettings.retort_limited_emoji_set) {
       return
     } else {
-      this._super()
+      this._super(y)
     }
   },
 
