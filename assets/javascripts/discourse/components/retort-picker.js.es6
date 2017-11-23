@@ -12,6 +12,27 @@ export default EmojiPicker.extend({
     }
   },
 
+  _unbindRetort() {
+    this.set('active', false)
+    this.close()
+  },
+
+  _bindEvents() {
+    this.$(document).on('keydown.retort-escape', (e) => {
+      if (e.target == 27)                                { this._unbindRetort() }
+    })
+    this.$(document).on('click.retort-click-outside', (e) => {
+      if (!$(e.target).closest('.retort-picker').length) { this._unbindRetort() }
+    })
+    return this._super()
+  },
+
+  _unbindEvents() {
+    this.$(document).off('click.retort-click-outside')
+    this.$(document).off('click.retort-escape')
+    return this._super()
+  },
+
   _loadCategoriesEmojis() {
     if (siteSettings.retort_limited_emoji_set) {
       const $picker = this.$('.emoji-picker')
