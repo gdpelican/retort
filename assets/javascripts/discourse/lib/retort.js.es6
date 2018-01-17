@@ -1,6 +1,6 @@
 import { ajax } from 'discourse/lib/ajax'
 
-const disabledCategories = Discourse.SiteSettings.retort_disabled_categories.split('|')
+const disabledCategories = _.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase')
 
 export default Ember.Object.create({
 
