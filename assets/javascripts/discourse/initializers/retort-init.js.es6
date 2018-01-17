@@ -15,7 +15,11 @@ function initializePlugin(api) {
   })
 
   api.decorateWidget('post-contents:after-cooked', helper => {
-    let post = Retort.postFor(helper.getModel().id)
+    let postId = helper.getModel().id
+    let post   = Retort.postFor(postId)
+
+    if (Retort.disabledFor(postId)) { return }
+
     Retort.storeWidget(helper)
 
     return _.map(post.retorts, (retort) => {
@@ -30,6 +34,7 @@ function initializePlugin(api) {
   if (!Discourse.User.current() || !siteSettings.retort_enabled) { return }
 
   api.addPostMenuButton('retort', attrs => {
+    if (Retort.disabledFor(attrs.id)) { return }
     return {
       action: 'clickRetort',
       icon: 'smile-o',

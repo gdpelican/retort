@@ -10,3 +10,6 @@ plugins:
     client: true
   retort_allow_multiple_reactions:
     default: true
+  retort_disabled_categories:
+    default: ""
+    client: true

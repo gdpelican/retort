@@ -1,5 +1,7 @@
 import { ajax } from 'discourse/lib/ajax'
 
+const disabledCategories = Discourse.SiteSettings.retort_disabled_categories.split('|')
+
 export default Ember.Object.create({
 
   callback(data) {
@@ -21,6 +23,11 @@ export default Ember.Object.create({
       type: 'POST',
       data: { retort: retort }
     })
+  },
+
+  disabledFor(postId) {
+    let categoryName = this.postFor(postId).get('topic.category.name') || ''
+    return _.contains(disabledCategories, categoryName.toLowerCase())
   },
 
   openPicker(post) {

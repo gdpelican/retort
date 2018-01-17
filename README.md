@@ -29,6 +29,12 @@ Feel free to style elements underneath the `.retort-picker` class in `Admin > Cu
 
 There's an additional site setting, 'retort allow multiple reactions', which determines whether users can react to a single post multiple times or not. (It is enabled by default). If you only want users to be able to create one reaction per post (if you're using Retort as a voting system, for example), set this option to false.
 
+### Disabling retort for particular categories
+
+The 'retort disabled categories' site setting allows disabling particular reacting in particular categories by name. These category names are case-insensitive.
+
+For example, entering `staff|announcements` into this field will disallow all users from reacting to topics in the categories name 'Staff' or 'Announcements'.
+
 ### Contributing
 
 Pull requests welcome! To contribute:
