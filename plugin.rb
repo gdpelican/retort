@@ -1,6 +1,6 @@
 # name: retort
 # about: Reactions plugin for Discourse
-# version: 1.1.6
+# version: 1.1.7
 # authors: James Kiesel (gdpelican)
 # url: https://github.com/gdpelican/retort
 
