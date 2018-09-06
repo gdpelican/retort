@@ -1,3 +1,5 @@
+.topic-post .topic-body { z-index: 3; }
+
 .post-retort {
   background: dark-light-diff($primary, $secondary, 25%, -25%);
   float: left;
