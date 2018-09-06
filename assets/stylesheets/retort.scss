@@ -1,11 +1,10 @@
 .post-retort {
-  background: #dfdfff;
+  background: dark-light-diff($primary, $secondary, 25%, -25%);
   float: left;
   padding: 2px;
   z-index: 1;
   margin: 20px 2px;
   border-radius: 5px;
-  border: 1px solid #ccf;
   position: relative;
   outline: 0;
 
@@ -19,8 +18,9 @@
     font-size: 12px;
     text-align: center;
     min-width: 125px;
-    background: black;
-    color: white;
+    max-width: 150px;
+    background: $primary;
+    color: $secondary;
     font-weight: bold;
     padding: 5px;
     border-radius: 5px;
@@ -29,6 +29,7 @@
     transform: translate(-50%, 0);
     z-index: 1;
     pointer-events: none;
+    word-break: break-word;
     &:after {
       content: ' ';
       width: 7px;
@@ -37,7 +38,7 @@
       left: 50%;
       transform: rotate(45deg) translate(-50%, 0);
       position: absolute;
-      background: black;
+      background: $primary;
     }
   }
 
@@ -48,7 +49,7 @@
     bottom: 3px;
     left: 1px;
     font-weight: bold;
-    color: #777;
+    color: $secondary;
   }
 }
 
