@@ -1,5 +1,3 @@
-.topic-post article.boxed { z-index: 0; }
-
 .post-retort {
   background: #dfdfff;
   float: left;
@@ -17,10 +15,10 @@
     opacity: 0;
     transition: .5s opacity;
     position: absolute;
-    top: 30px;
+    bottom: 30px;
     font-size: 12px;
     text-align: center;
-    width: 140px;
+    min-width: 125px;
     background: black;
     color: white;
     font-weight: bold;
@@ -35,7 +33,7 @@
       content: ' ';
       width: 7px;
       height: 7px;
-      top: 0;
+      bottom: -5px;
       left: 50%;
       transform: rotate(45deg) translate(-50%, 0);
       position: absolute;
