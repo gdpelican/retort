@@ -26,8 +26,9 @@ export default Ember.Object.create({
   },
 
   disabledFor(postId) {
-    let categoryName = this.postFor(postId).get('topic.category.name') || ''
-    return _.contains(disabledCategories, categoryName.toLowerCase())
+    let post = this.postFor(postId)
+    let categoryName = post.get('topic.category.name') || ''
+    return _.contains(disabledCategories, categoryName.toLowerCase()) || post.get('topic.archived')
   },
 
   openPicker(post) {
