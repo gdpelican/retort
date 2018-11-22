@@ -1,4 +1,5 @@
 import { ajax } from 'discourse/lib/ajax'
+import { popupAjaxError } from "discourse/lib/ajax-error";
 
 const disabledCategories = _.compact(_.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase'))
 
@@ -22,7 +23,7 @@ export default Ember.Object.create({
     return ajax(`/retorts/${postId}.json`, {
       type: 'POST',
       data: { retort: retort }
-    })
+    }).catch(popupAjaxError)
   },
 
   disabledFor(postId) {
