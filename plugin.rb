@@ -133,20 +133,10 @@ after_initialize do
   class ::PostDetail
     include RateLimiter::OnCreateRecord
     rate_limit :retort_rate_limiter
-    after_update :retort_after_update
+    after_update { run_callbacks :create if is_retort? }
 
     def is_retort?
       extra == RETORT_PLUGIN_NAME
-    end
-
-    def retort_after_update
-      return unless is_retort? && !@rate_limits_disabled
-
-      if rate_limiter = retort_rate_limiter
-        rate_limiter.performed!
-        @performed ||= {}
-        @performed["retort_rate_limiter"] = true
-      end
     end
 
     def retort_rate_limiter
