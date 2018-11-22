@@ -150,22 +150,20 @@ after_initialize do
     end
 
     def retort_rate_limiter
-      return unless is_retort?
-      return @rate_limiter if @rate_limiter.present?
+      @rate_limiter ||= RateLimiter.new(retort_author, "create_retort", retort_max_per_day, 1.day.to_i) if is_retort?
+    end
 
-      limit = SiteSetting.send("retort_max_per_day")
-      added_username = Array(JSON.parse(value)).last
-      user = User.find_by(username: added_username)
+    def retort_author
+      @retort_author ||= User.find_by(username: Array(JSON.parse(value)).last)
+    end
 
-      if user && user.trust_level >= 2
-        multiplier = SiteSetting.send("retort_tl#{user.trust_level}_max_per_day_multiplier").to_f
-        multiplier = 1.0 if multiplier < 1.0
+    def retort_max_per_day
+      (SiteSetting.retort_max_per_day * retort_trust_multiplier).to_i
+    end
 
-        limit = (limit * multiplier).to_i
-      end
-
-      @rate_limiter = RateLimiter.new(user, "create_retort", limit, 1.day.to_i)
-      @rate_limiter
+    def retort_trust_multiplier
+      return 1.0 unless retort_author&.trust_level.to_i >= 2
+      SiteSetting.send(:"retort_tl#{retort_author.trust_level}_max_per_day_multiplier")
     end
   end
 end
