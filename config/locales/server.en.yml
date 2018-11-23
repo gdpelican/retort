@@ -6,3 +6,7 @@ en:
     retort_emojis_per_row: "Select how many custom emojis will appear per row (Leave blank to have them all appear in a single row)"
     retort_allow_multiple_reactions: "Allow users to react multiple times to the same post"
     retort_disabled_categories: "List out the categories you'd like to DISABLE retort for, separated by the '|' character"
+    retort_max_per_day: "Maximum number of retorts per user per day."
+    retort_tl2_max_per_day_multiplier: "Increase limit of retorts per day for tl2 (member) by multiplying with this number"
+    retort_tl3_max_per_day_multiplier: "Increase limit of retorts per day for tl3 (regular) by multiplying with this number"
+    retort_tl4_max_per_day_multiplier: "Increase limit of retorts per day for tl4 (leader) by multiplying with this number"

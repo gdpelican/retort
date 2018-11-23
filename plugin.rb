@@ -127,4 +127,33 @@ after_initialize do
       return ActiveModel::ArraySerializer.new(Retort::Retort.for_post(post: object), each_serializer: ::Retort::RetortSerializer).as_json
     end
   end
+
+  require_dependency 'rate_limiter'
+  require_dependency 'post_detail'
+  class ::PostDetail
+    include RateLimiter::OnCreateRecord
+    rate_limit :retort_rate_limiter
+    after_update { run_callbacks :create if is_retort? }
+
+    def is_retort?
+      extra == RETORT_PLUGIN_NAME
+    end
+
+    def retort_rate_limiter
+      @rate_limiter ||= RateLimiter.new(retort_author, "create_retort", retort_max_per_day, 1.day.to_i) if is_retort?
+    end
+
+    def retort_author
+      @retort_author ||= User.find_by(username: Array(JSON.parse(value)).last)
+    end
+
+    def retort_max_per_day
+      (SiteSetting.retort_max_per_day * retort_trust_multiplier).to_i
+    end
+
+    def retort_trust_multiplier
+      return 1.0 unless retort_author&.trust_level.to_i >= 2
+      SiteSetting.send(:"retort_tl#{retort_author.trust_level}_max_per_day_multiplier")
+    end
+  end
 end

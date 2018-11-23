@@ -13,3 +13,7 @@ plugins:
   retort_disabled_categories:
     default: ""
     client: true
+  retort_max_per_day: 50
+  retort_tl2_max_per_day_multiplier: 1.5
+  retort_tl3_max_per_day_multiplier: 2
+  retort_tl4_max_per_day_multiplier: 3
