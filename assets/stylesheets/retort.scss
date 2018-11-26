@@ -88,9 +88,7 @@
     }
 
     button.emoji.text {
-      background-size: initial;
       padding: 10px;
-      width: 100px;
     }
   }
 
@@ -117,4 +115,9 @@
   hr {
     width: 100%;
   }
+}
+
+.emoji.text {
+  background-size: initial !important;
+  width: 100px !important;
 }

@@ -47,3 +47,32 @@ export default Ember.Object.create({
     this.set('picker.limitOptions', Discourse.SiteSettings.retort_limited_emoji_set)
   }
 })
+
+function allAllowedEmojis() {
+  const setting = Discourse.SiteSettings.retort_allowed_emojis;
+  return setting.length ? setting.split('|') : [];
+}
+
+function allowedEmojis() {
+  return allAllowedEmojis()
+    .filter(code => code.indexOf(":text") === -1);
+}
+
+function allowedTextEmojis() {
+  return allAllowedEmojis()
+    .filter(code => code.indexOf(":text") > -1)
+    .map(code => code.split(":")[0]);
+}
+
+function applyTextEmojiClass() {
+  const textEmojis = allowedTextEmojis();
+  if (textEmojis.length) {
+    Ember.run.scheduleOnce('afterRender', () => {
+      textEmojis.forEach(code => {
+        $(`.emoji[title="${code}"], .emoji[title=":${code}:"]`).addClass('text');
+      });
+    });
+  }
+}
+
+export { allAllowedEmojis, allowedEmojis, allowedTextEmojis, applyTextEmojiClass };

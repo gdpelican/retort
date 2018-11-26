@@ -1,5 +1,6 @@
 import EmojiPicker from 'discourse/components/emoji-picker'
 import { emojiUrlFor } from 'discourse/lib/text'
+import { allowedEmojis, allowedTextEmojis } from '../lib/retort';
 
 const siteSettings = Discourse.SiteSettings
 
@@ -39,14 +40,14 @@ export default EmojiPicker.extend({
       const basis   = this._flexBasis()
       $picker.html("")
 
-      const emojis = this._allowedEmojis();
+      const emojis = allowedEmojis();
       emojis.map((code) => {
         $picker.append(`<button type="button" title="${code}" class="emoji" />`)
         this.$(`button.emoji[title="${code}"]`).css("background-image", `url("${emojiUrlFor(code)}")`)
                                                .css("flex-basis", `${basis}%`)
       })
 
-      const textEmojis = this._allowedTextEmojis();
+      const textEmojis = allowedTextEmojis();
       if (textEmojis.length) {
         if (emojis.length) {
           $picker.append("<hr>");
@@ -65,23 +66,8 @@ export default EmojiPicker.extend({
     }
   },
 
-  _allAllowedEmojis() {
-    return siteSettings.retort_allowed_emojis.split('|');
-  },
-
-  _allowedEmojis() {
-    return this._allAllowedEmojis()
-      .filter(e => e.indexOf(":text") === -1);
-  },
-
-  _allowedTextEmojis() {
-    return this._allAllowedEmojis()
-      .filter(e => e.indexOf(":text") > -1)
-      .map(e => e.split(":")[0]);
-  },
-
   _flexBasis() {
-    return (100 / this._emojisPerRow[this._allowedEmojis().length] || 5)
+    return (100 / this._emojisPerRow[allowedEmojis().length] || 5)
   },
 
   _emojisPerRow: {

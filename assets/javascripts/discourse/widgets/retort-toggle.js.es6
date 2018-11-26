@@ -1,6 +1,6 @@
 import { createWidget } from 'discourse/widgets/widget'
 import template from '../widgets/templates/retort-toggle'
-import Retort from '../lib/retort'
+import { default as Retort, allowedTextEmojis } from '../lib/retort'
 
 export default createWidget('retort-toggle', {
   tagName: 'button.post-retort',
@@ -10,24 +10,12 @@ export default createWidget('retort-toggle', {
   buildClasses(attrs) {
     let classes = '';
 
-    const allowedEmojis = this._allowedEmojis();
-    if (allowedEmojis.length) {
-      const textEmojis = this._textEmojis();
-      if (textEmojis.length && textEmojis.indexOf(attrs.emoji) > -1) {
-        classes += ' text';
-      }
+    const textEmojis = allowedTextEmojis();
+    if (textEmojis.length && textEmojis.indexOf(attrs.emoji) > -1) {
+      classes += ' text';
     }
 
     return classes;
-  },
-
-  _allowedEmojis() {
-    return Discourse.SiteSettings.retort_allowed_emojis.split('|');
-  },
-
-  _textEmojis() {
-    return this._allowedEmojis().filter(e => e.indexOf(':text') > -1)
-      .map(e => e.split(':')[0]);
   },
 
   defaultState(attrs) {
