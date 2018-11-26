@@ -38,19 +38,46 @@ export default EmojiPicker.extend({
       const $picker = this.$('.emoji-picker')
       const basis   = this._flexBasis()
       $picker.html("")
-      this._allowedEmojis().map((code) => {
+
+      const emojis = this._allowedEmojis();
+      emojis.map((code) => {
         $picker.append(`<button type="button" title="${code}" class="emoji" />`)
         this.$(`button.emoji[title="${code}"]`).css("background-image", `url("${emojiUrlFor(code)}")`)
                                                .css("flex-basis", `${basis}%`)
       })
+
+      const textEmojis = this._allowedTextEmojis();
+      if (textEmojis.length) {
+        if (emojis.length) {
+          $picker.append("<hr>");
+        }
+        $picker.append("<div class='text-emoji-wrapper'>");
+        textEmojis.forEach((code) => {
+          $picker.append(`<button type="button" title="${code}" class="emoji text" />`);
+          this.$(`button.emoji[title="${code}"]`).css("background-image", `url("${emojiUrlFor(code)}")`);
+        });
+        $picker.append("</div>");
+      }
+
       this._bindEmojiClick($picker);
     } else {
       this._super()
     }
   },
 
+  _allAllowedEmojis() {
+    return siteSettings.retort_allowed_emojis.split('|');
+  },
+
   _allowedEmojis() {
-    return siteSettings.retort_allowed_emojis.split('|')
+    return this._allAllowedEmojis()
+      .filter(e => e.indexOf(":text") === -1);
+  },
+
+  _allowedTextEmojis() {
+    return this._allAllowedEmojis()
+      .filter(e => e.indexOf(":text") > -1)
+      .map(e => e.split(":")[0]);
   },
 
   _flexBasis() {

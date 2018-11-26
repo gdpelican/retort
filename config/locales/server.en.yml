@@ -2,7 +2,7 @@ en:
   site_settings:
     retort_enabled: "Enable Retort reactions plugin."
     retort_limited_emoji_set: "Constrain the list of reactions to the list specified below"
-    retort_allowed_emojis: "List out the emojis you'd like to allow, separated by the '|' character"
+    retort_allowed_emojis: "List out the emojis you'd like to allow, separated by the '|' character. Add ':text' after text emojis."
     retort_emojis_per_row: "Select how many custom emojis will appear per row (Leave blank to have them all appear in a single row)"
     retort_allow_multiple_reactions: "Allow users to react multiple times to the same post"
     retort_disabled_categories: "List out the categories you'd like to DISABLE retort for, separated by the '|' character"

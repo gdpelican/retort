@@ -53,6 +53,19 @@
     font-weight: bold;
     color: $secondary;
   }
+
+  &.text {
+    background: initial;
+
+    img {
+      width: 80px;
+      height: 20px;
+    }
+
+    .post-retort__count {
+      color: $primary;
+    }
+  }
 }
 
 .retort__emoji-picker-wrapper {
@@ -68,6 +81,16 @@
       background-size: 40px;
       margin: 0;
       padding: 10px 0;
+    }
+
+    .text-emoji-wrapper {
+      padding: 0 10px;
+    }
+
+    button.emoji.text {
+      background-size: initial;
+      padding: 10px;
+      width: 100px;
     }
   }
 
@@ -89,5 +112,9 @@
     }
 
     .emoji-picker { bottom: auto !important; }
+  }
+
+  hr {
+    width: 100%;
   }
 }
