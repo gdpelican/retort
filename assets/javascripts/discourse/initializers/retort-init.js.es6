@@ -1,8 +1,9 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import TopicRoute from 'discourse/routes/topic'
-import Retort from '../lib/retort'
+import { default as Retort, applyTextEmojiClass } from '../lib/retort'
 import { registerEmoji } from 'pretty-text/emoji'
 import { emojiUrlFor } from 'discourse/lib/text'
+import { on } from 'ember-addons/ember-computed-decorators';
 
 function initializePlugin(api) {
 
@@ -45,7 +46,20 @@ function initializePlugin(api) {
 
   api.attachWidgetAction('post-menu', 'clickRetort', function() {
     Retort.openPicker(this.findAncestorModel())
-  })
+  });
+
+  api.modifyClass('component:emoji-picker', {
+    @on("didUpdateAttrs")
+    hideTextEmojis() {
+      if (this.get("active")) {
+        applyTextEmojiClass();
+      }
+    }
+  });
+
+  api.decorateCooked($elem => {
+    applyTextEmojiClass();
+  });
 }
 
 export default {
