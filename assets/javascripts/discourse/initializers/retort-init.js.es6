@@ -20,14 +20,27 @@ function initializePlugin(api) {
 
     if (Retort.disabledFor(postId)) { return }
 
-    Retort.storeWidget(helper)
+    Retort.storeWidget(helper);
+
+    const alternateCount = siteSettings.retort_alternate_count;
 
     return _.map(post.retorts, (retort) => {
-      return helper.attach('retort-toggle', {
-        post:      post,
-        usernames: retort.usernames,
-        emoji:     retort.emoji
-      })
+      let usernames = retort.usernames;
+      let contents = [helper.attach('retort-toggle', {
+        post:           post,
+        usernames:      usernames,
+        emoji:          retort.emoji,
+        alternateCount: alternateCount
+      })];
+
+      if (alternateCount && usernames.length > 0) {
+        contents.push(helper.attach('retort-count', {
+          emoji: retort.emoji,
+          count: usernames.length
+        }));
+      }
+
+      return contents;
     })
   })
 
@@ -41,10 +54,57 @@ function initializePlugin(api) {
       title: 'retort.title',
       position: 'first'
     }
-  })
+  });
 
   api.attachWidgetAction('post-menu', 'clickRetort', function() {
     Retort.openPicker(this.findAncestorModel())
+  });
+
+  api.attachWidgetAction('post-menu', 'toggleWhoRetorted', function() {
+    const state = this.state;
+    if (state.retortedUsers.length) {
+      state.retortedUsers = [];
+    } else {
+      return this.getWhoRetorted();
+    }
+  });
+
+  api.attachWidgetAction('post-menu', 'getWhoRetorted', function() {
+    const { attrs, state } = this;
+
+    return ajax(`/${attrs.id}/users`)
+      .then(users => {
+        state.retortedUsers = users;
+        state.total = users.length;
+      });
+  });
+
+  api.reopenWidget('post-menu', {
+    defaultState() {
+      let state = this._super();
+      state['retortedUsers'] = [];
+      return state;
+    },
+
+    html(attrs, state) {
+      let contents = this._super(attrs, state);
+
+      if (state.retortedUsers.length) {
+        contents.push(
+          this.attach("small-user-list", {
+            users: state.retortedUsers,
+            addSelf: attrs.liked && remaining === 0,
+            listClassName: "who-liked",
+            description:
+              remaining > 0
+                ? "post.actions.people.like_capped"
+                : "post.actions.people.like",
+          })
+        );
+      }
+
+      return contents;
+    }
   })
 }
 

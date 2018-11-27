@@ -19,7 +19,8 @@ after_initialize do
   end
 
   ::Retort::Engine.routes.draw do
-    post   "/:post_id" => "retorts#update"
+    post   "/:post_id"       => "retorts#update"
+    get    "/:post_id/users" => "retort#users"
   end
 
   Discourse::Application.routes.append do
@@ -32,6 +33,10 @@ after_initialize do
     def update
       retort.toggle_user(current_user)
       respond_with_retort
+    end
+
+    def users
+      render_json_dump(ActiveModel::ArraySerializer.new(User.find_by(username: retort.value), each_serializer: BasicUserSerializer))
     end
 
     private

@@ -17,3 +17,4 @@ plugins:
   retort_tl2_max_per_day_multiplier: 1.5
   retort_tl3_max_per_day_multiplier: 2
   retort_tl4_max_per_day_multiplier: 3
+  retort_alternate_count: false

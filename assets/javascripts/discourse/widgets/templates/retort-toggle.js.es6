@@ -4,7 +4,12 @@ import { emojiUrlFor } from 'discourse/lib/text'
 export default Ember.Object.create({
   render(widget) {
     this.state = widget.state
-    return [this.emoji(), this.count(), this.tooltip()]
+    let template = [this.emoji()];
+    console.log(this.state);
+    if (!this.state.alternateCount) {
+      template.push(this.count(), this.tooltip());
+    }
+    return template;
   },
 
   emoji() {
