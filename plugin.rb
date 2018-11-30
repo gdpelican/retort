@@ -20,7 +20,7 @@ after_initialize do
 
   ::Retort::Engine.routes.draw do
     post   "/:post_id"       => "retorts#update"
-    get    "/:post_id/users" => "retort#users"
+    get    "/:post_id/users" => "retorts#users"
   end
 
   Discourse::Application.routes.append do
@@ -36,7 +36,7 @@ after_initialize do
     end
 
     def users
-      render_json_dump(ActiveModel::ArraySerializer.new(User.find_by(username: retort.value), each_serializer: BasicUserSerializer))
+      render_json_dump(ActiveModel::ArraySerializer.new(User.where(username: retort.value), each_serializer: BasicUserSerializer))
     end
 
     private

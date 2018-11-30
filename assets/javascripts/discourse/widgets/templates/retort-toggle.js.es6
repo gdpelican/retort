@@ -5,7 +5,6 @@ export default Ember.Object.create({
   render(widget) {
     this.state = widget.state
     let template = [this.emoji()];
-    console.log(this.state);
     if (!this.state.alternateCount) {
       template.push(this.count(), this.tooltip());
     }

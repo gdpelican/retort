@@ -2,3 +2,8 @@ en:
   js:
     retort:
       title: 'add an emoji reaction to this post'
+
+    post:
+      actions:
+        people:
+          retort: reacted with {{count}}

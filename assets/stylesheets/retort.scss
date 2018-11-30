@@ -91,3 +91,19 @@
     .emoji-picker { bottom: auto !important; }
   }
 }
+
+.post-retort-count {
+  padding: 0;
+  margin: 20px 0 20px 5px;
+
+  button.btn {
+    background: none;
+    padding: 6px;
+    min-height: initial;
+
+    &:hover {
+      background: none;
+      color: $primary;
+    }
+  }
+}

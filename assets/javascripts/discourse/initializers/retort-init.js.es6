@@ -3,6 +3,8 @@ import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
 import { registerEmoji } from 'pretty-text/emoji'
 import { emojiUrlFor } from 'discourse/lib/text'
+import { ajax } from 'discourse/lib/ajax';
+import { avatarAtts } from "discourse/widgets/actions-summary";
 
 function initializePlugin(api) {
 
@@ -26,12 +28,7 @@ function initializePlugin(api) {
 
     return _.map(post.retorts, (retort) => {
       let usernames = retort.usernames;
-      let contents = [helper.attach('retort-toggle', {
-        post:           post,
-        usernames:      usernames,
-        emoji:          retort.emoji,
-        alternateCount: alternateCount
-      })];
+      let contents = [];
 
       if (alternateCount && usernames.length > 0) {
         contents.push(helper.attach('retort-count', {
@@ -39,6 +36,15 @@ function initializePlugin(api) {
           count: usernames.length
         }));
       }
+
+      contents.push(
+        helper.attach('retort-toggle', {
+          post:           post,
+          usernames:      usernames,
+          emoji:          retort.emoji,
+          alternateCount: alternateCount
+        })
+      )
 
       return contents;
     })
@@ -60,52 +66,87 @@ function initializePlugin(api) {
     Retort.openPicker(this.findAncestorModel())
   });
 
-  api.attachWidgetAction('post-menu', 'toggleWhoRetorted', function() {
-    const state = this.state;
-    if (state.retortedUsers.length) {
-      state.retortedUsers = [];
-    } else {
-      return this.getWhoRetorted();
-    }
-  });
-
-  api.attachWidgetAction('post-menu', 'getWhoRetorted', function() {
-    const { attrs, state } = this;
-
-    return ajax(`/${attrs.id}/users`)
-      .then(users => {
-        state.retortedUsers = users;
-        state.total = users.length;
-      });
-  });
-
   api.reopenWidget('post-menu', {
-    defaultState() {
-      let state = this._super();
-      state['retortedUsers'] = [];
-      return state;
+    toggleWhoLiked() {
+      this.state.retortedUsers = [];
+      return this._super();
+    },
+
+    getWhoRetorted(emoji) {
+      const { attrs, state } = this;
+
+      return ajax(`/retorts/${attrs.id}/users`, {
+        data: {
+          retort: emoji
+        }
+      }).then(users => {
+        if (users && users.length) {
+          state.retortedUsers = users.map(avatarAtts);
+          state.retort = emoji;
+          this.scheduleRerender();
+        }
+      });
+    },
+
+    retortName(retort) {
+      let fragments = retort.split('_');
+      fragments.pop();
+      fragments.forEach(frag => {
+        frag = frag.charAt(0).toUpperCase() + frag.slice(1);
+      });
+      return fragments.join(' ');
     },
 
     html(attrs, state) {
       let contents = this._super(attrs, state);
 
-      if (state.retortedUsers.length) {
+      if (attrs.showRetortsFor) {
+        state.likedUsers = [];
+        this.getWhoRetorted(attrs.showRetortsFor);
+      }
+
+      if (attrs.hideRetorts) {
+        state.retortedUsers = [];
+      }
+
+      if (state.retortedUsers && state.retortedUsers.length) {
         contents.push(
           this.attach("small-user-list", {
             users: state.retortedUsers,
-            addSelf: attrs.liked && remaining === 0,
+            addSelf: false,
             listClassName: "who-liked",
-            description:
-              remaining > 0
-                ? "post.actions.people.like_capped"
-                : "post.actions.people.like",
+            description: "post.actions.people.retort",
+            count: this.retortName(state.retort)
           })
         );
       }
 
       return contents;
     }
-  })
+  });
+
+  api.reopenWidget('post', {
+    toggleWhoRetorted(emoji) {
+      if (this.state.showRetortsFor == emoji) {
+        this.state.hideRetorts = true;
+        this.state.showRetortsFor = null;
+      } else {
+        this.state.showRetortsFor = emoji;
+        this.state.hideRetorts = null;
+      }
+      this.scheduleRerender();
+    },
+
+    html(attrs, state) {
+      if (state.showRetortsFor) {
+        attrs['showRetortsFor'] = state.showRetortsFor;
+      }
+      if (state.hideRetorts) {
+        attrs['hideRetorts'] = state.hideRetorts;
+      }
+      return this._super(attrs, state);
+    },
+  });
 }
 
 export default {
