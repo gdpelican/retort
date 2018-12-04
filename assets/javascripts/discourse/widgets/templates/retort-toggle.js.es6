@@ -5,7 +5,7 @@ export default Ember.Object.create({
   render(widget) {
     this.state = widget.state
     let template = [this.emoji()];
-    if (!this.state.alternateCount) {
+    if (!Discourse.SiteSettings.retort_standard_count) {
       template.push(this.count(), this.tooltip());
     }
     return template;

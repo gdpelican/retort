@@ -24,13 +24,11 @@ function initializePlugin(api) {
 
     Retort.storeWidget(helper);
 
-    const alternateCount = siteSettings.retort_alternate_count;
-
     return _.map(post.retorts, (retort) => {
       let usernames = retort.usernames;
       let contents = [];
 
-      if (alternateCount && usernames.length > 0) {
+      if (siteSettings.retort_standard_count && usernames.length > 0) {
         contents.push(helper.attach('retort-count', {
           emoji: retort.emoji,
           count: usernames.length
@@ -41,8 +39,7 @@ function initializePlugin(api) {
         helper.attach('retort-toggle', {
           post:           post,
           usernames:      usernames,
-          emoji:          retort.emoji,
-          alternateCount: alternateCount
+          emoji:          retort.emoji
         })
       )
 

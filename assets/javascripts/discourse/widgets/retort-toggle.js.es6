@@ -11,8 +11,7 @@ export default createWidget('retort-toggle', {
     return {
       emoji:     attrs.emoji,
       post:      attrs.post,
-      usernames: attrs.usernames,
-      alternateCount: attrs.alternateCount
+      usernames: attrs.usernames
     }
   },
 
