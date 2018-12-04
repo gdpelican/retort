@@ -111,7 +111,7 @@ function initializePlugin(api) {
           this.attach("small-user-list", {
             users: state.retortedUsers,
             addSelf: false,
-            listClassName: "who-liked",
+            listClassName: "who-retorted",
             description: "post.actions.people.retort",
             count: this.retortName(state.retort)
           })
