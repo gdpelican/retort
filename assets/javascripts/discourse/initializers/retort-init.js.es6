@@ -22,7 +22,7 @@ function initializePlugin(api) {
 
     if (Retort.disabledFor(postId)) { return }
 
-    Retort.storeWidget(helper);
+    Retort.storeWidget(helper)
 
     return _.map(post.retorts, (retort) => {
       let usernames = retort.usernames;
