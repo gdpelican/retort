@@ -69,17 +69,17 @@ function initializePlugin(api) {
       return this._super();
     },
 
-    getWhoRetorted(emoji) {
+    getWhoRetorted(retort) {
       const { attrs, state } = this;
 
       return ajax(`/retorts/${attrs.id}/users`, {
         data: {
-          retort: emoji
+          retort
         }
       }).then(users => {
         if (users && users.length) {
           state.retortedUsers = users.map(avatarAtts);
-          state.retort = emoji;
+          state.retort = retort;
           this.scheduleRerender();
         }
       });
