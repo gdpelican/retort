@@ -4,11 +4,7 @@ import { emojiUrlFor } from 'discourse/lib/text'
 export default Ember.Object.create({
   render(widget) {
     this.state = widget.state
-    let template = [this.emoji()];
-    if (!Discourse.SiteSettings.retort_standard_count) {
-      template.push(this.count(), this.tooltip());
-    }
-    return template;
+    return [this.emoji(), this.count(), this.tooltip()];
   },
 
   emoji() {
@@ -16,11 +12,12 @@ export default Ember.Object.create({
   },
 
   count() {
-    if (this.state.usernames.length < 2) { return }
+    if (this.state.usernames.length < 2 || Discourse.SiteSettings.retort_standard_count) { return }
     return h('span.post-retort__count', this.state.usernames.length.toString())
   },
 
   tooltip() {
+    if (Discourse.SiteSettings.retort_standard_count) { return }
     return h('span.post-retort__tooltip', this.sentence())
   },
 
