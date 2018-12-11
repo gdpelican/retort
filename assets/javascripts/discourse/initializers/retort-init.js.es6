@@ -25,7 +25,7 @@ function initializePlugin(api) {
     Retort.storeWidget(helper)
 
     return _.map(post.retorts, (retort) => {
-      { usernames, emoji } = retort;
+      let { usernames, emoji } = retort;
       let contents = [];
 
       if (siteSettings.retort_standard_count && usernames.length > 0) {
