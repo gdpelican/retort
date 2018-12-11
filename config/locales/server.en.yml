@@ -10,4 +10,4 @@ en:
     retort_tl2_max_per_day_multiplier: "Increase limit of retorts per day for tl2 (member) by multiplying with this number"
     retort_tl3_max_per_day_multiplier: "Increase limit of retorts per day for tl3 (regular) by multiplying with this number"
     retort_tl4_max_per_day_multiplier: "Increase limit of retorts per day for tl4 (leader) by multiplying with this number"
-    retort_standard_count: "Use standard Discourse style for displaying retort count."
+    retort_standard_count: "Show a clickable count next to retorts, and display a list of users who retorted at the bottom of the post when count is clicked."
