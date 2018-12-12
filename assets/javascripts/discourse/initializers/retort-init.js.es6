@@ -65,24 +65,8 @@ function initializePlugin(api) {
 
   api.reopenWidget('post-menu', {
     toggleWhoLiked() {
-      this.state.retortedUsers = [];
+      this.sendWidgetAction('clearWhoRetorted');
       return this._super();
-    },
-
-    getWhoRetorted(retort) {
-      const { attrs, state } = this;
-
-      return ajax(`/retorts/${attrs.id}/users`, {
-        data: {
-          retort
-        }
-      }).then(users => {
-        if (users && users.length) {
-          state.retortedUsers = users.map(avatarAtts);
-          state.retort = retort;
-          this.scheduleRerender();
-        }
-      });
     },
 
     retortName(retort) {
@@ -95,25 +79,20 @@ function initializePlugin(api) {
     },
 
     html(attrs, state) {
+      if (attrs.showingRetortsFor) {
+        state.likedUsers = [];
+      }
+
       let contents = this._super(attrs, state);
 
-      if (attrs.showRetortsFor) {
-        state.likedUsers = [];
-        this.getWhoRetorted(attrs.showRetortsFor);
-      }
-
-      if (attrs.hideRetorts) {
-        state.retortedUsers = [];
-      }
-
-      if (state.retortedUsers && state.retortedUsers.length) {
+      if (attrs.showingRetortsFor) {
         contents.push(
           this.attach("small-user-list", {
-            users: state.retortedUsers,
+            users: attrs.retortedUsers,
             addSelf: false,
             listClassName: "who-retorted",
             description: "post.actions.people.retort",
-            count: this.retortName(state.retort)
+            count: this.retortName(attrs.showingRetortsFor)
           })
         );
       }
@@ -123,23 +102,42 @@ function initializePlugin(api) {
   });
 
   api.reopenWidget('post', {
-    toggleWhoRetorted(emoji) {
-      if (this.state.showRetortsFor == emoji) {
-        this.state.hideRetorts = true;
-        this.state.showRetortsFor = null;
+    toggleWhoRetorted(retort) {
+      if (this.state.showingRetortsFor == retort) {
+        this.state.retortedUsers = [];
+        this.state.showingRetortsFor = null;
       } else {
-        this.state.showRetortsFor = emoji;
-        this.state.hideRetorts = null;
+        this.getWhoRetorted(retort);
       }
       this.scheduleRerender();
     },
 
+    getWhoRetorted(retort) {
+      const { attrs, state } = this;
+
+      return ajax(`/retorts/${attrs.id}/users`, {
+        data: {
+          retort
+        }
+      }).then(users => {
+        if (users && users.length) {
+          state.retortedUsers = users.map(avatarAtts);
+          state.showingRetortsFor = retort;
+          this.scheduleRerender();
+        }
+      });
+    },
+
+    clearWhoRetorted() {
+      this.state.retortedUsers = [];
+      this.state.showingRetortsFor = null;
+      this.scheduleRerender();
+    },
+
     html(attrs, state) {
-      if (state.showRetortsFor) {
-        attrs['showRetortsFor'] = state.showRetortsFor;
-      }
-      if (state.hideRetorts) {
-        attrs['hideRetorts'] = state.hideRetorts;
+      if (state.showingRetortsFor) {
+        attrs['showingRetortsFor'] = state.showingRetortsFor;
+        attrs['retortedUsers'] = state.retortedUsers;
       }
       return this._super(attrs, state);
     },
