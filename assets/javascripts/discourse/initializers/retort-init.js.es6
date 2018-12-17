@@ -71,10 +71,14 @@ function initializePlugin(api) {
 
     retortName(retort) {
       let fragments = retort.split('_');
-      fragments.pop();
-      fragments.forEach(frag => {
-        frag = frag.charAt(0).toUpperCase() + frag.slice(1);
+
+      let namespaceIndex = fragments.indexOf('retort');
+      if (namespaceIndex !== -1) fragments.splice(namespaceIndex, 1);
+
+      fragments = fragments.map(frag => {
+        return frag.charAt(0).toUpperCase() + frag.slice(1);
       });
+
       return fragments.join(' ');
     },
 

@@ -92,9 +92,10 @@
   }
 }
 
-.post-retort-count {
+div.post-retort-count {
   padding: 0;
   margin: 20px 0 20px 5px;
+  background: transparent;
 
   button.btn {
     background: none;
@@ -106,4 +107,8 @@
       color: $primary;
     }
   }
+}
+
+.who-retorted a:last-of-type {
+  margin-right: 7px;
 }
