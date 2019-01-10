@@ -106,14 +106,18 @@ function initializePlugin(api) {
   });
 
   api.reopenWidget('post', {
+    toggledRetort(retort) {
+      if (this.state.showingRetortsFor == retort) {
+        this.clearWhoRetorted();
+      }
+    },
+
     toggleWhoRetorted(retort) {
       if (this.state.showingRetortsFor == retort) {
-        this.state.retortedUsers = [];
-        this.state.showingRetortsFor = null;
+        this.clearWhoRetorted();
       } else {
         this.getWhoRetorted(retort);
       }
-      this.scheduleRerender();
     },
 
     getWhoRetorted(retort) {
