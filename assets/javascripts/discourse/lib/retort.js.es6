@@ -11,7 +11,7 @@ export default Ember.Object.create({
   },
 
   postFor(id) {
-    return _.find(this.get('topicController.model.postStream.posts'), p => { return p.id == id })
+    return this.get('topicController.model.postStream.posts').find(p => p.id == id)
   },
 
   storeWidget(helper) {
