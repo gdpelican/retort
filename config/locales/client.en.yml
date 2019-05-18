@@ -2,3 +2,7 @@ en:
   js:
     retort:
       title: 'add an emoji reaction to this post'
+      reactions:
+        one_person:  "%{first} reacted with :%{emoji}:"
+        two_people:  "%{first} and %{second} reacted with :%{emoji}:"
+        many_people: "%{first}, %{second}, and %{count} others reacted with :%{emoji}:"
