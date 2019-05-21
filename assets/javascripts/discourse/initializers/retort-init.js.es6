@@ -1,8 +1,6 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
-import { registerEmoji } from 'pretty-text/emoji'
-import { emojiUrlFor } from 'discourse/lib/text'
 
 function initializePlugin(api) {
 
