@@ -6,12 +6,18 @@ const disabledCategories = _.compact(_.invoke(Discourse.SiteSettings.retort_disa
 export default Ember.Object.create({
 
   callback(data) {
-    this.postFor(data.id).setProperties({ retorts: data.retorts })
+    const post = this.postFor(data.id)
+    if (!post) { return }
+
+    post.setProperties({ retorts: data.retorts })
     this.get(`widgets.${data.id}`).scheduleRerender()
   },
 
   postFor(id) {
-    return this.get('topicController.model.postStream.posts').find(p => p.id == id)
+    const posts = this.get('topicController.model.postStream.posts')
+    if (!posts) { return }
+
+    return posts.find(p => p.id == id)
   },
 
   storeWidget(helper) {
@@ -27,10 +33,10 @@ export default Ember.Object.create({
   },
 
   disabledFor(postId) {
-    const post = this.postFor(postId)
-    if (!post) { return }
+    let post = this.postFor(postId)
+    if (!post) { return true }
 
-    const categoryName = (post.get('topic.category.name') || '').toLowerCase()
+    let categoryName = _.toString(post.get('topic.category.name')).toLowerCase()
     return disabledCategories.includes(categoryName) || post.get('topic.archived')
   },
 
