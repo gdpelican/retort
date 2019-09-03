@@ -20,13 +20,13 @@ function initializePlugin(api) {
 
     Retort.storeWidget(helper)
 
-    return _.map(post.retorts, (retort) => {
+    return helper.h('div.post-retort-area.clearfix', _.map(post.retorts, (retort) => {
       return helper.attach('retort-toggle', {
         post:      post,
         usernames: retort.usernames,
         emoji:     retort.emoji
       })
-    })
+    }))
   })
 
   if (!Discourse.User.current() || !siteSettings.retort_enabled) { return }
