@@ -1,12 +1,10 @@
 // .topic-post .topic-body { z-index: 3; }
 
 .post-retort {
-  background: dark-light-diff($primary, $secondary, 25%, -25%);
   float: left;
   padding: 2px;
   z-index: 1;
   margin: 20px 2px;
-  border-radius: 5px;
   position: relative;
   outline: 0;
 
