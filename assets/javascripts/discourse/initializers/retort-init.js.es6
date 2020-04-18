@@ -1,15 +1,21 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
+import { emojiUrlFor } from 'discourse/lib/text'
+import { schedule } from '@ember/runloop'
+import computed from 'discourse-common/utils/decorators'
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
+import User from 'discourse/models/user'
 
 function initializePlugin(api) {
+  const {
+    retort_enabled,
+    retort_allowed_emojis,
+    retort_limited_emoji_set
+  } = api.container.lookup('site-settings:main')
 
-  const siteSettings = api.container.lookup('site-settings:main')
-
-  TopicRoute.on("setupTopicController", function(event) {
-    let controller = event.controller
+  TopicRoute.on('setupTopicController', function({ controller }) {
     Retort.set('topicController', controller)
-    controller.messageBus.subscribe(`/retort/topics/${controller.model.id}`, (data) => { Retort.callback(data) })
+    controller.messageBus.subscribe(`/retort/topics/${controller.model.id}`, data => Retort.callback(data))
   })
 
   api.decorateWidget('post-contents:after-cooked', helper => {
@@ -20,22 +26,18 @@ function initializePlugin(api) {
 
     Retort.storeWidget(helper)
 
-    return _.map(post.retorts, (retort) => {
-      return helper.attach('retort-toggle', {
-        post:      post,
-        usernames: retort.usernames,
-        emoji:     retort.emoji
-      })
+    return _.map(post.retorts, ({ usernames, emoji }) => {
+      return helper.attach('retort-toggle', { post, usernames, emoji })
     })
   })
 
-  if (!Discourse.User.current() || !siteSettings.retort_enabled) { return }
+  if (!User.current() || !retort_enabled) { return }
 
   api.addPostMenuButton('retort', attrs => {
     if (Retort.disabledFor(attrs.id)) { return }
     return {
       action: 'clickRetort',
-      icon: 'smile-o',
+      icon: 'far-smile',
       title: 'retort.title',
       position: 'first'
     }
@@ -43,6 +45,73 @@ function initializePlugin(api) {
 
   api.attachWidgetAction('post-menu', 'clickRetort', function() {
     Retort.openPicker(this.findAncestorModel())
+  })
+
+  api.modifyClass('component:emoji-picker', {
+    classNameBindings: [
+      'retort:emoji-picker--retort',
+      'limited:emoji-picker--retort-limited',
+      'active:emoji-picker--retort-active'
+    ],
+
+    @computed('retort')
+    limited() {
+      return this.retort && retort_limited_emoji_set
+    },
+
+    show() {
+      if (!this.limited) { return this._super() }
+      const emojis = retort_allowed_emojis.split('|')
+      const basis = (100 / this._emojisPerRow[emojis.length] || 5)
+
+      schedule('afterRender', this, () => {
+        this.$picker.find('.main-column').html(`
+          <div class='section-group'>
+            ${emojis.map(code => `<button
+              style='flex-basis: ${basis}%; background-image: url(${emojiUrlFor(code)})'
+              type='button'
+              title='${code}'
+              class='emoji' />`).join('')}
+          </div>
+        `)
+
+        this._positionPicker()
+        this._bindEmojiClick(this.$picker.find('.section-group'))
+        this.$modal.addClass('fadeIn')
+      })
+    },
+
+    _recentEmojisChanged() {
+      if (!this.limited) { return this._super() }
+    },
+
+    _emojisPerRow: {
+      0: 1,
+      1: 1,
+      2: 2,
+      3: 3,
+      4: 4,
+      5: 5,
+      6: 3,
+      7: 3,
+      8: 4,
+      9: 3,
+      10: 5,
+      11: 5,
+      12: 4,
+      13: 5,
+      14: 7,
+      15: 5,
+      16: 4,
+      17: 5,
+      18: 6,
+      19: 6,
+      20: 5,
+      21: 7,
+      22: 5,
+      23: 5,
+      24: 6
+    }
   })
 }
 
