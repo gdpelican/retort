@@ -4,14 +4,17 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 const disabledCategories = _.compact(_.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase'))
 
 export default Ember.Object.create({
+  callback({ id, retorts }) {
+    const post = this.postFor(id)
+    if (!post) { return }
 
-  callback(data) {
-    this.postFor(data.id).setProperties({ retorts: data.retorts })
-    this.get(`widgets.${data.id}`).scheduleRerender()
+    post.setProperties({ retorts })
+    this.get(`widgets.${id}`).scheduleRerender()
   },
 
   postFor(id) {
-    return this.get('topicController.model.postStream.posts').find(p => p.id == id)
+    const posts = this.get('topicController.model.postStream.posts') || []
+    return posts.find(p => p.id == id)
   },
 
   storeWidget(helper) {
@@ -19,31 +22,32 @@ export default Ember.Object.create({
     this.set(`widgets.${helper.getModel().id}`, helper.widget)
   },
 
-  updateRetort(postId, retort) {
-    return ajax(`/retorts/${postId}.json`, {
+  updateRetort({ id }, retort) {
+    return ajax(`/retorts/${id}.json`, {
       type: 'POST',
-      data: { retort: retort }
+      data: { retort }
     }).catch(popupAjaxError)
   },
 
   disabledFor(postId) {
-    let post = this.postFor(postId)
-    let categoryName = post ? (post.get('topic.category.name') || '') : ''
-    return disabledCategories.includes(categoryName.toLowerCase()) || post.get('topic.archived')
+    const post = this.postFor(postId)
+    if (!post) { return true }
+
+    let categoryName = _.toString(post.get('topic.category.name')).toLowerCase()
+    return disabledCategories.includes(categoryName) || post.get('topic.archived')
   },
 
   openPicker(post) {
     this.set('picker.active', true)
-    this.set('picker.postId', post.id)
+    this.set('picker.post', post)
   },
 
   setPicker(picker) {
     this.set('picker', picker)
-    this.set('picker.onSelect', (retort) => {
-      this.updateRetort(picker.postId, retort).then(() => {
-        this.set('picker.active', false)
-      })
-    })
-    this.set('picker.limitOptions', Discourse.SiteSettings.retort_limited_emoji_set)
+    this.set('picker.emojiSelected', retort => (
+      this.updateRetort(picker.post, retort)).then(() => (
+        picker.set('active', false)
+      ))
+    )
   }
 })

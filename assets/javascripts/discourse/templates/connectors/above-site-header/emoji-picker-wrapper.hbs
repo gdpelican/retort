@@ -1,8 +1,7 @@
-<div class="retort__emoji-picker-wrapper
-  {{if limitOptions 'retort__emoji-picker-wrapper--limited'}}
-  {{if active       'retort__emoji-picker-wrapper--active'}}">
-  {{retort-picker
-    active=active
-    emojiSelected=onSelect
-    automaticPositioning=false}}
-</div>
+{{
+  emoji-picker
+  retort=true
+  active=active
+  emojiSelected=emojiSelected
+  automaticPositioning=false
+}}
