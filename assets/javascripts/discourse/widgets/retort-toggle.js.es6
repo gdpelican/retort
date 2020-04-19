@@ -21,7 +21,7 @@ export default createWidget('retort-toggle', {
     const { emoji, usernames } = this.state
     return [
       h('img.emoji', { src: emojiUrlFor(emoji), alt: `:${emoji}:` }),
-      usernames > 2 ? h('span.post-retort__count', usernames.length.toString()) : '',
+      usernames.length > 1 ? h('span.post-retort__count', usernames.length.toString()) : '',
       h('span.post-retort__tooltip', this.sentence(this.state))
     ]
   },
