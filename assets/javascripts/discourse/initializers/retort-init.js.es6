@@ -51,12 +51,17 @@ function initializePlugin(api) {
     classNameBindings: [
       'retort:emoji-picker--retort',
       'limited:emoji-picker--retort-limited',
-      'active:emoji-picker--retort-active'
+      'activeRetort:emoji-picker--retort-active'
     ],
 
     @computed('retort')
     limited() {
       return this.retort && retort_limited_emoji_set
+    },
+
+    @computed('retort', 'active')
+    activeRetort() {
+      return this.retort && this.active
     },
 
     show() {
