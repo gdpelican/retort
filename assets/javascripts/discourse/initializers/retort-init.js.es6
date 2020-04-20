@@ -81,6 +81,7 @@ function initializePlugin(api) {
         `)
 
         this._positionPicker()
+        this._bindModalClick()
         this._bindEmojiClick(this.$picker.find('.section-group'))
         this.$modal.addClass('fadeIn')
       })
