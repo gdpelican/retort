@@ -46,7 +46,7 @@ after_initialize do
 
     def verify_post_and_user
       respond_with_unprocessable("Unable to find post #{params[:post_id]}") unless post
-      respond_with_unprocessable("You are not permitted to modify this") unless current_user
+      respond_with_unprocessable("You are not permitted to modify this") unless current_user && !current_user.suspended?
     end
 
     def respond_with_retort
