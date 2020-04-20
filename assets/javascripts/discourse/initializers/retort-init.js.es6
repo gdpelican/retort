@@ -31,7 +31,7 @@ function initializePlugin(api) {
     })
   })
 
-  if (!User.current() || !retort_enabled) { return }
+  if (!User.current() || !retort_enabled || User.current().get('suspended')) { return }
 
   api.addPostMenuButton('retort', attrs => {
     if (Retort.disabledFor(attrs.id)) { return }
