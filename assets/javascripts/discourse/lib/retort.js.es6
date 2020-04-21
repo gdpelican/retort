@@ -32,6 +32,7 @@ export default Ember.Object.create({
   disabledFor(postId) {
     const post = this.postFor(postId)
     if (!post) { return true }
+    if (!post.topic.details.can_create_post) { return true }
 
     let categoryName = _.toString(post.get('topic.category.name')).toLowerCase()
     return disabledCategories.includes(categoryName) || post.get('topic.archived')
