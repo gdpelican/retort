@@ -4,17 +4,25 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 const disabledCategories = _.compact(_.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase'))
 
 export default Ember.Object.create({
-  callback({ id, retorts }) {
-    const post = this.postFor(id)
-    if (!post) { return }
+  topic: { postStream: { posts: [] } },
 
-    post.setProperties({ retorts })
-    this.get(`widgets.${id}`).scheduleRerender()
+  initialize(messageBus, topic) {
+    if (this.topic.id) {
+      messageBus.unsubscribe(`/retort/topics/${this.topic.id}`)
+    }
+
+    this.set('topic', topic)
+    messageBus.subscribe(`/retort/topics/${this.topic.id}`, ({ id, retorts }) => {
+      const post = this.postFor(id)
+      if (!post) { return }
+
+      post.setProperties({ retorts })
+      this.get(`widgets.${id}`).scheduleRerender()
+    })
   },
 
   postFor(id) {
-    const posts = this.get('topicController.model.postStream.posts') || []
-    return posts.find(p => p.id == id)
+    return this.get('topic.postStream.posts').find(p => p.id == id)
   },
 
   storeWidget(helper) {

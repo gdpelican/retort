@@ -12,11 +12,7 @@ function initializePlugin(api) {
     retort_allowed_emojis,
     retort_limited_emoji_set
   } = api.container.lookup('site-settings:main')
-
-  TopicRoute.on('setupTopicController', function({ controller }) {
-    Retort.set('topicController', controller)
-    controller.messageBus.subscribe(`/retort/topics/${controller.model.id}`, data => Retort.callback(data))
-  })
+  const messageBus = api.container.lookup('message-bus:main')
 
   api.decorateWidget('post-contents:after-cooked', helper => {
     let postId = helper.getModel().id
@@ -32,6 +28,14 @@ function initializePlugin(api) {
   })
 
   if (!User.current() || !retort_enabled) { return }
+
+  api.modifyClass('route:topic', {
+    setupController(controller, model) {
+      Retort.initialize(messageBus, model)
+
+      this._super(controller, model)
+    }
+  })
 
   api.addPostMenuButton('retort', attrs => {
     if (Retort.disabledFor(attrs.id)) { return }
