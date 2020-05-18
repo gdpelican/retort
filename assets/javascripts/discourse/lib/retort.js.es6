@@ -22,7 +22,7 @@ export default Ember.Object.create({
   },
 
   postFor(id) {
-    return this.get('topic.postStream.posts').find(p => p.id == id)
+    return (this.get('topic.postStream.posts') || []).find(p => p.id == id)
   },
 
   storeWidget(helper) {
