@@ -1,8 +1,6 @@
 import { ajax } from 'discourse/lib/ajax'
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
-const disabledCategories = _.compact(_.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase'))
-
 export default Ember.Object.create({
   topic: { postStream: { posts: [] } },
 
@@ -36,12 +34,17 @@ export default Ember.Object.create({
       data: { retort }
     }).catch(popupAjaxError)
   },
+  
+  disabledCategories() {
+    return _.compact(_.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase'));
+  },
 
   disabledFor(postId) {
     const post = this.postFor(postId)
     if (!post) { return true }
     if (!post.topic.details.can_create_post) { return true }
-
+    
+    const disabledCategories = this.disabledCategories();
     let categoryName = _.toString(post.get('topic.category.name')).toLowerCase()
     return disabledCategories.includes(categoryName) || post.get('topic.archived')
   },
