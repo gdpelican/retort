@@ -2,6 +2,7 @@ import { withPluginApi } from 'discourse/lib/plugin-api'
 import { emojiUrlFor } from 'discourse/lib/text'
 import { schedule } from '@ember/runloop'
 import computed from 'discourse-common/utils/decorators'
+import { action } from "@ember/object";
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
 import User from 'discourse/models/user'
@@ -57,42 +58,53 @@ function initializePlugin(api) {
       'limited:emoji-picker--retort-limited',
       'activeRetort:emoji-picker--retort-active'
     ],
+    
+    didReceiveAttrs() {
+      this._super(...arguments);
+      if (this.retort) {
+        this.set('tagName', 'div');
+      }
+    },
 
     @computed('retort')
     limited() {
       return this.retort && retort_limited_emoji_set
     },
 
-    @computed('retort', 'active')
+    @computed('retort', 'isActive')
     activeRetort() {
-      return this.retort && this.active
+      return this.retort && this.isActive
     },
 
-    show() {
-      if (!this.limited) { return this._super() }
-      const emojis = retort_allowed_emojis.split('|')
-      const basis = (100 / this._emojisPerRow[emojis.length] || 5)
+    @action
+    onShow() {
+      if (this.limited) {
+        const emojis = retort_allowed_emojis.split('|')
+        const basis = (100 / this._emojisPerRow[emojis.length] || 5)
 
-      schedule('afterRender', this, () => {
-        this.$picker.find('.main-column').html(`
-          <div class='section-group'>
-            ${emojis.map(code => `<button
-              style='flex-basis: ${basis}%; background-image: url(${emojiUrlFor(code)})'
-              type='button'
-              title='${code}'
-              class='emoji' />`).join('')}
-          </div>
-        `)
-
-        this._positionPicker()
-        this._bindModalClick()
-        this._bindEmojiClick(this.$picker.find('.section-group'))
-        this.$modal.addClass('fadeIn')
-      })
-    },
-
-    _recentEmojisChanged() {
-      if (!this.limited) { return this._super() }
+        schedule('afterRender', this, () => {
+          $('.emoji-picker').html(`
+            <div class='limited-emoji-set'>
+              ${emojis.map(code => `<img
+                src="${emojiUrlFor(code)}"
+                width=20
+                height=20
+                title='${code}'
+                class='emoji' />`).join('')}
+            </div>
+          `)
+          $('.emoji-picker--retort').on('click', (e) => {
+            if ($(e.target).hasClass('emoji')) {
+              this.onEmojiSelection(e);
+            } else {
+              this.set('isActive', false);
+              this.onClose();
+            }
+          });
+        });
+      }
+      
+      this._super();
     },
 
     _emojisPerRow: {
