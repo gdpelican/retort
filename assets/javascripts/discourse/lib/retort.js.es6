@@ -50,7 +50,7 @@ export default Ember.Object.create({
   },
 
   openPicker(post) {
-    this.set('picker.active', true)
+    this.set('picker.isActive', true)
     this.set('picker.post', post)
   },
 
@@ -58,7 +58,7 @@ export default Ember.Object.create({
     this.set('picker', picker)
     this.set('picker.emojiSelected', retort => (
       this.updateRetort(picker.post, retort)).then(() => (
-        picker.set('active', false)
+        picker.set('isActive', false)
       ))
     )
   }

@@ -78,14 +78,17 @@
       flex-wrap: wrap;
       justify-content: center;
       border: 0;
-
-      button.emoji {
+      margin-top: 80px;
+      
+      .limited-emoji-set {
+        display: flex;
+      }
+      
+      img.emoji {
         display: block;
-        width: 40px;
-        height: 40px;
-        background-size: 40px;
-        margin: 0;
-        padding: 10px 0;
+        margin: 0 10px 0 0;
+        padding: 0;
+        cursor: pointer;
       }
     }
 
