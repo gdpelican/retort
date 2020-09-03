@@ -1,7 +1,7 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import { emojiUrlFor } from 'discourse/lib/text'
 import { schedule } from '@ember/runloop'
-import computed from 'discourse-common/utils/decorators'
+import { default as computed, observes } from 'discourse-common/utils/decorators'
 import { action } from "@ember/object";
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
@@ -75,9 +75,9 @@ function initializePlugin(api) {
     activeRetort() {
       return this.retort && this.isActive
     },
-
-    @action
-    onShow() {
+    
+    @observes('isActive')
+    _setupLimited() {
       if (this.limited) {
         const emojis = retort_allowed_emojis.split('|')
         const basis = (100 / this._emojisPerRow[emojis.length] || 5)
@@ -103,8 +103,6 @@ function initializePlugin(api) {
           });
         });
       }
-      
-      this._super();
     },
 
     _emojisPerRow: {
