@@ -1,8 +1,10 @@
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import { emojiUrlFor } from 'discourse/lib/text'
-import { schedule } from '@ember/runloop'
-import computed from 'discourse-common/utils/decorators'
+import { schedule, later } from '@ember/runloop'
+import { default as computed, observes } from 'discourse-common/utils/decorators'
 import { action } from "@ember/object";
+import { createPopper } from "@popperjs/core";
+import { safariHacksDisabled } from "discourse/lib/utilities";
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
 import User from 'discourse/models/user'
@@ -44,7 +46,8 @@ function initializePlugin(api) {
       action: 'clickRetort',
       icon: 'far-smile',
       title: 'retort.title',
-      position: 'first'
+      position: 'first',
+      className: 'retort'
     }
   })
 
@@ -53,19 +56,7 @@ function initializePlugin(api) {
   })
 
   api.modifyClass('component:emoji-picker', {
-    classNameBindings: [
-      'retort:emoji-picker--retort',
-      'limited:emoji-picker--retort-limited',
-      'activeRetort:emoji-picker--retort-active'
-    ],
     
-    didReceiveAttrs() {
-      this._super(...arguments);
-      if (this.retort) {
-        this.set('tagName', 'div');
-      }
-    },
-
     @computed('retort')
     limited() {
       return this.retort && retort_limited_emoji_set
@@ -75,36 +66,105 @@ function initializePlugin(api) {
     activeRetort() {
       return this.retort && this.isActive
     },
-
+    
+    @observes("isActive")
+    _setup() {
+      if (this.retort) {
+        this._setupRetort();
+      } else {
+        this._super();
+      }
+    },
+    
+    _setupRetort() {
+      if (this.isActive) {
+        this.onShowRetort();
+      } else {
+        this.onClose();
+      }
+    },
+    
+    // See onShow in emoj-picker for logic pattern
     @action
-    onShow() {
-      if (this.limited) {
-        const emojis = retort_allowed_emojis.split('|')
-        const basis = (100 / this._emojisPerRow[emojis.length] || 5)
+    onShowRetort() {
+      if (!this.limited) {
+        this.set("isLoading", true);
+      }
+    
+      schedule("afterRender", () => {
+        document.addEventListener("click", this.handleOutsideClick);
+        
+        const post = this.post;
+        const emojiPicker = document.querySelector(".emoji-picker");
+        const retortButton = document.querySelector(`
+          article[data-post-id="${post.id}"] .post-controls .retort`
+        );
+                
+        if (!emojiPicker || !retortButton) return false;
 
-        schedule('afterRender', this, () => {
-          $('.emoji-picker').html(`
+        if (!this.site.isMobileDevice) {
+          this._popper = createPopper(
+            retortButton,
+            emojiPicker,
+            {
+              placement: this.limited ? "top" : "auto"
+            }
+          );
+        }
+        
+        if (this.limited) {
+          const emojis = retort_allowed_emojis.split('|')
+          const basis = (100 / this._emojisPerRow[emojis.length] || 5)
+
+          emojiPicker.innerHTML = `
             <div class='limited-emoji-set'>
               ${emojis.map(code => `<img
                 src="${emojiUrlFor(code)}"
-                width=20
-                height=20
+                width=40
+                height=40
                 title='${code}'
                 class='emoji' />`).join('')}
             </div>
-          `)
-          $('.emoji-picker--retort').on('click', (e) => {
-            if ($(e.target).hasClass('emoji')) {
+          `;
+          
+          emojiPicker.classList.add("has-limited-set");
+          
+          emojiPicker.onclick = (e) => {
+            if (e.target.classList.contains("emoji")) {
               this.onEmojiSelection(e);
             } else {
               this.set('isActive', false);
               this.onClose();
             }
-          });
-        });
-      }
-      
-      this._super();
+          };
+        } else {
+          emojiPicker
+            .querySelectorAll(".emojis-container .section .section-header")
+            .forEach(p => this._sectionObserver.observe(p));
+
+          later(() => {
+            this.set("isLoading", false);
+            this.applyDiscourseTrick(emojiPicker);
+          }, 50);
+        }      
+      });
+    },
+    
+    // Lifted from onShow in emoji-picker. See note in that function concerning its utility.
+    applyDiscourseTrick(emojiPicker) {
+      schedule("afterRender", () => {
+        if (
+          (!this.site.isMobileDevice || this.isEditorFocused) &&
+          !safariHacksDisabled()
+        ) {
+          const filter = emojiPicker.querySelector("input.filter");
+          filter && filter.focus();
+        }
+
+        if (this.selectedDiversity !== 0) {
+          this._applyDiversity(this.selectedDiversity);
+        }
+      });
     },
 
     _emojisPerRow: {

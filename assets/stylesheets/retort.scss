@@ -53,47 +53,28 @@
   }
 }
 
-.emoji-picker--retort {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &-active {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10000;
-
-    .emoji-picker {
-      bottom: auto !important;
+.emoji-picker.has-limited-set {
+  height: auto;
+  width: auto;
+  padding: 10px;
+  
+  .limited-emoji-set {
+    display: flex;
+  }
+  
+  img.emoji {
+    margin-right: 10px;
+    cursor: pointer;
+    
+    &:last-of-type {
+      margin-right: 0;
     }
   }
+}
 
-  &-limited {
-    .emoji-picker {
-      width: auto !important;
-      height: auto !important;
-      flex-wrap: wrap;
-      justify-content: center;
-      border: 0;
-      margin-top: 80px;
-      
-      .limited-emoji-set {
-        display: flex;
-      }
-      
-      img.emoji {
-        display: block;
-        margin: 0 10px 0 0;
-        padding: 0;
-        cursor: pointer;
-      }
-    }
-
-    .categories-column {
-      display: none;
-    }
-  }
+.mobile-view .emoji-picker.has-limited-set {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
 }
