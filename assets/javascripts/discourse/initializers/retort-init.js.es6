@@ -25,9 +25,9 @@ function initializePlugin(api) {
 
     Retort.storeWidget(helper)
 
-    return _.map(post.retorts, ({ usernames, emoji }) => {
-      return helper.attach('retort-toggle', { post, usernames, emoji })
-    })
+    return post.retorts.map(({usernames, emoji}) => {
+      return helper.attach('retort-toggle', { post, usernames, emoji });
+    });
   })
 
   if (!User.current() || !retort_enabled) { return }

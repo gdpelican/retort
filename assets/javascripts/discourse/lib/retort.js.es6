@@ -34,18 +34,20 @@ export default Ember.Object.create({
       data: { retort }
     }).catch(popupAjaxError)
   },
-  
+
   disabledCategories() {
-    return _.compact(_.invoke(Discourse.SiteSettings.retort_disabled_categories.split('|'), 'toLowerCase'));
+    const categories = Discourse.SiteSettings.retort_disabled_categories.split('|');
+    return categories.map(cat => cat.toLowerCase()).filter(Boolean)
   },
 
   disabledFor(postId) {
     const post = this.postFor(postId)
     if (!post) { return true }
     if (!post.topic.details.can_create_post) { return true }
-    
+
     const disabledCategories = this.disabledCategories();
-    let categoryName = _.toString(post.get('topic.category.name')).toLowerCase()
+    let categoryName = post.get('topic.category.name').toString().toLowerCase();
+
     return disabledCategories.includes(categoryName) || post.get('topic.archived')
   },
 
