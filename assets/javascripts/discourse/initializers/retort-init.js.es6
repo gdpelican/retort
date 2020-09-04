@@ -107,7 +107,20 @@ function initializePlugin(api) {
             retortButton,
             emojiPicker,
             {
-              placement: this.limited ? "top" : "auto"
+              placement: this.limited ? "top" : "auto",
+              onFirstUpdate: state => {
+                emojiPicker.scrollIntoView({
+                  behavior: 'auto',
+                  block: 'center',
+                  inline: 'center'
+                });
+              },
+              modifiers: [
+                {
+                  name: 'flip',
+                  enabled: false
+                }
+              ]
             }
           );
         }
