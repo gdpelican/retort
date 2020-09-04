@@ -44,11 +44,12 @@ export default Ember.Object.create({
     const post = this.postFor(postId)
     if (!post) { return true }
     if (!post.topic.details.can_create_post) { return true }
-
+    if (post.get('topic.archived')) { return true }
+    
+    const categoryName = post.get('topic.category.name');
     const disabledCategories = this.disabledCategories();
-    let categoryName = post.get('topic.category.name').toString().toLowerCase();
-
-    return disabledCategories.includes(categoryName) || post.get('topic.archived')
+    return categoryName && 
+      disabledCategories.includes(categoryName.toString().toLowerCase());
   },
 
   openPicker(post) {
