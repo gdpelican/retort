@@ -146,7 +146,7 @@ function initializePlugin(api) {
           
           emojiPicker.onclick = (e) => {
             if (e.target.classList.contains("emoji")) {
-              this.onEmojiSelection(e);
+              this.emojiSelected(e.target.title);
             } else {
               this.set('isActive', false);
               this.onClose();
