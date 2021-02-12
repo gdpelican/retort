@@ -5,6 +5,7 @@ import { default as computed, observes } from 'discourse-common/utils/decorators
 import { action } from "@ember/object";
 import { createPopper } from "@popperjs/core";
 import { safariHacksDisabled } from "discourse/lib/utilities";
+import { emojiSearch } from "pretty-text/emoji";
 import TopicRoute from 'discourse/routes/topic'
 import Retort from '../lib/retort'
 import User from 'discourse/models/user'
@@ -109,20 +110,7 @@ function initializePlugin(api) {
             retortButton,
             emojiPicker,
             {
-              placement: this.limited ? "top" : "auto",
-              onFirstUpdate: state => {
-                emojiPicker.scrollIntoView({
-                  behavior: 'auto',
-                  block: 'center',
-                  inline: 'center'
-                });
-              },
-              modifiers: [
-                {
-                  name: 'flip',
-                  enabled: false
-                }
-              ]
+              placement: this.limited ? "top" : "bottom"
             }
           );
         }
@@ -180,6 +168,44 @@ function initializePlugin(api) {
           this._applyDiversity(this.selectedDiversity);
         }
       });
+    },
+    
+    @action
+    onCategorySelection(sectionName) {
+      const section = document.querySelector(
+        `.emoji-picker-emoji-area .section[data-section="${sectionName}"]`
+      );
+      section && section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest'
+      });
+    },
+    
+    @action
+    onFilter(event) {
+      const emojiPickerArea = document.querySelector(".emoji-picker-emoji-area");
+      const emojisContainer = emojiPickerArea.querySelector(".emojis-container");
+      const results = emojiPickerArea.querySelector(".results");
+      results.innerHTML = "";
+
+      if (event.target.value) {
+        results.innerHTML = emojiSearch(event.target.value.toLowerCase(), {
+          maxResults: 10,
+          diversity: this.emojiStore.diversity,
+        })
+          .map(this._replaceEmoji)
+          .join("");
+
+        emojisContainer.style.visibility = "hidden";
+        results.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        });
+      } else {
+        emojisContainer.style.visibility = "visible";
+      }
     },
 
     _emojisPerRow: {
