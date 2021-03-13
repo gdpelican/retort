@@ -30,8 +30,12 @@ after_initialize do
     before_action :verify_post_and_user, only: :update
 
     def update
-      retort.toggle_user(current_user)
-      respond_with_retort
+      if SiteSetting.retort_limited_emoji_set && !SiteSetting.retort_allowed_emojis.split("|").include?(params[:retort])
+        respond_with_unprocessable("Requested retort is disabled")
+      else
+        retort.toggle_user(current_user)
+        respond_with_retort
+      end
     end
 
     private
