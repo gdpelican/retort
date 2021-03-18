@@ -16,6 +16,6 @@ export default DiscourseRoute.extend({
 
   deactivate() {
     this._super(...arguments);
-    this.controllerFor('admin.adminPlugins.retort').unsubscribe();
+    this.controllerFor('admin-plugins-retort').unsubscribe();
   }
 });

@@ -16,9 +16,10 @@ en:
           description: |
             Migrate "retorts" created with the Retort plugin to "reactions" created with the <a href="https://meta.discourse.org/t/discourse-reactions-beyond-likes" target="_blank">Discourse Reactions</a> plugin.
             <ul>
-            <li>By default, the migration will produce a report on what will be migrated, and not make any changes. Check "real run" and then run the migration again to perform the changes.</li>
-            <li>By default, new Discourse Reactions data is created, but Retort data is not removed. You can remove the Retort data by checking "delete retort data" and running the migration again.</li>
-            <li>Running a real migration multiple times will not produce duplicate Discourse Reactions data.</li>
+            <li>Both plugins need to be installed to run a migration</li>
+            <li>If "real run" is unchecked, a report on what will be migrated is produced, but no data is changed.</li>
+            <li>Check "delete retort data" to remove retort data after reaction data is created.</li>
+            <li>Running a migration multiple times will not produce duplicate Discourse Reactions data.</li>
             </ul>
             
           start: Start Migration

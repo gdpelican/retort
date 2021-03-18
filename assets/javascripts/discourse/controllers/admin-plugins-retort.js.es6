@@ -13,7 +13,11 @@ export default Controller.extend({
 
   subscribe(channel) {
     this.messageBus.subscribe("/retort/migrate", (data) => {
-      this.get('migrations').unshiftObject(data);
+      if (data.error) {
+        this.setMessage(data.error, 'error');
+      } else if (data.success) {
+        this.get('migrations').unshiftObject(data);
+      }    
     });
   },
 
@@ -21,13 +25,17 @@ export default Controller.extend({
     this.messageBus.unsubscribe("/retort/migrate");
   },
   
+  setMessage(text, type) {
+    this.set('message', { text, type });
+    setTimeout(() => { this.set('message', null) }, 10000);
+  },
+  
   startMigration(data) {
     ajax('/retorts/migrate', {
       type: 'POST',
       data
     }).then(() => {
-      this.set('started', true);
-      setTimeout(() => { this.set('started', false) }, 6000);
+      this.setMessage(I18n.t('admin.retort.migrate.started'), 'success');
     });
   },
   

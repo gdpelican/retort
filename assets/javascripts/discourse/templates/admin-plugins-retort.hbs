@@ -19,15 +19,9 @@
   </div>
 </div>
 
-{{#if started}}
-  <div class="message success">
-    <span>{{i18n 'admin.retort.migrate.started'}}</span>
-  </div>
-{{/if}}
-
-{{#if report.error}}
-  <div class="message error">
-    <span>{{report.error}}</span>
+{{#if message}}
+  <div class="message {{message.type}}">
+    <span>{{message.text}}</span>
   </div>
 {{/if}}
 
