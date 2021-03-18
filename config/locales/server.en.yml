@@ -10,3 +10,7 @@ en:
     retort_tl2_max_per_day_multiplier: "Increase limit of retorts per day for tl2 (member) by multiplying with this number"
     retort_tl3_max_per_day_multiplier: "Increase limit of retorts per day for tl3 (regular) by multiplying with this number"
     retort_tl4_max_per_day_multiplier: "Increase limit of retorts per day for tl4 (leader) by multiplying with this number"
+  retort:
+    migrate:
+      discourse_reactions_not_enabled: "Discourse Reactions is not present and enabled"
+      no_retorts: "Could not find any retorts to migrate"

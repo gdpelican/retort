@@ -6,3 +6,35 @@ en:
         one_person:  "%{first} reacted with :%{emoji}:"
         two_people:  "%{first} and %{second} reacted with :%{emoji}:"
         many_people: "%{first}, %{second}, and %{count} others reacted with :%{emoji}:"
+
+  admin_js:
+    admin:
+      retort:
+        title: "Retort"
+        migrate:
+          title: Migrate Retorts to Discourse Reactions
+          description: |
+            Migrate "retorts" created with the Retort plugin to "reactions" created with the <a href="https://meta.discourse.org/t/discourse-reactions-beyond-likes" target="_blank">Discourse Reactions</a> plugin.
+            <ul>
+            <li>By default, the migration will produce a report on what will be migrated, and not make any changes. Check "real run" and then run the migration again to perform the changes.</li>
+            <li>By default, new Discourse Reactions data is created, but Retort data is not removed. You can remove the Retort data by checking "delete retort data" and running the migration again.</li>
+            <li>Running a real migration multiple times will not produce duplicate Discourse Reactions data.</li>
+            </ul>
+            
+          start: Start Migration
+          started: The migration has started. When it's complete, this page will automatically update with the migration report.
+          real_run: real run
+          delete_retorts: delete retort data
+          confirm_delete: Are you sure you want to delete all your retort data? If you uninstall the Retort plugin, retorts will not appear on posts.
+
+        migrations:
+          title: Migrations
+          migrated_at: migrated at
+          retorts_migrated: will migrate / migrated
+          user_doesnt_exist: user doesn't exist
+          retort_not_supported: not a supported reaction
+          post_deleted: post deleted
+          user_already_reacted: user already reacted
+          real: real migration
+          retorts_deleted: retorts deleted
+          

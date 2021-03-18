@@ -1,0 +1,88 @@
+.admin-plugins.retort {
+  .description {
+    background-color: $primary-very-low;
+    padding: .5em .75em;
+    border-radius: .5em;
+    
+    ul {
+      margin: 0 0 0 25px;
+    }
+    
+    li {
+      margin: .5em 0;
+    }
+  }
+  
+  .controls,
+  .options {
+    display: flex;
+    align-items: center;
+    
+    > * {
+      margin-right: 1em;
+    }
+  }
+  
+  .option {
+    display: flex;
+    align-items: center;
+  }
+  
+  .message {
+    padding: 1em;
+    margin-top: 1em;
+    color: $secondary;
+    
+    &.success {
+      background-color: $success;
+    }
+    
+    &.error {
+      background-color: $danger;
+    }
+  }
+  
+  .report {
+    margin-top: 1em;
+  }
+  
+  .retort-report-item {
+    background-color: $primary-very-low;
+    padding: .5em;
+    border-radius: .5em;
+    position: relative;
+    
+    &.has-details {
+      cursor: pointer;
+    }
+    
+    ul {
+      list-style: none;
+      padding: .5em;
+      border-radius: .5em;
+      margin: 0;
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background-color: $secondary;
+      z-index: 1;
+      box-shadow: shadow('dropdown');
+      border-top: 1px solid $primary-low;
+      
+      li {
+        padding: .25em .5em;
+        display: flex;
+        align-items: center;
+        
+        &:not(:last-of-type) {
+          border-bottom: 1px solid $primary-low;
+        }
+        
+        span {
+          margin-right: .5em;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}

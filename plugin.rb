@@ -5,25 +5,63 @@
 # url: https://github.com/gdpelican/retort
 
 register_asset "stylesheets/retort.scss"
-
-RETORT_PLUGIN_NAME ||= "retort".freeze
+register_asset "stylesheets/retort_admin.scss"
 
 enabled_site_setting :retort_enabled
 
+add_admin_route "admin.retort.title", "retort"
+
 after_initialize do
   module ::Retort
+    PLUGIN_NAME ||= "retort".freeze
+    
     class Engine < ::Rails::Engine
-      engine_name RETORT_PLUGIN_NAME
+      engine_name PLUGIN_NAME
       isolate_namespace Retort
     end
   end
+  
+  %w(
+    ../lib/retort/migrate_result.rb
+    ../lib/retort/migrate.rb
+    ../jobs/migrate_retorts_to_reactions.rb
+  ).each do |path|
+    load File.expand_path(path, __FILE__)
+  end
 
   ::Retort::Engine.routes.draw do
+    get    "/migrate"  => "retorts_admin#migrations"
+    post   "/migrate"  => "retorts_admin#migrate"
     post   "/:post_id" => "retorts#update"
   end
 
   Discourse::Application.routes.append do
     mount ::Retort::Engine, at: "/retorts"
+    get "/admin/plugins/retort" => "admin/plugins#index", constraints: AdminConstraint.new
+  end
+  
+  class ::Retort::RetortsAdminController < Admin::AdminController
+    before_action :ensure_admin
+    
+    def migrate
+      args = {}
+      args[:real_run] = ActiveModel::Type::Boolean.new.cast(params[:real_run])
+      args[:delete_retorts] = ActiveModel::Type::Boolean.new.cast(params[:delete_retorts])
+      
+      Jobs.enqueue(:migrate_retorts_to_reactions, args)
+      
+      render json: success_json
+    end
+    
+    def migrations
+      render json: { migrations: Retort::Migrate.list_migrations.map{ |m| m.as_json } }
+    end
+    
+    protected
+    
+    def migrate_params
+      params.permit(:real_run, :delete_retorts)
+    end
   end
 
   class ::Retort::RetortsController < ApplicationController
@@ -77,7 +115,7 @@ after_initialize do
   ::Retort::Retort = Struct.new(:detail) do
 
     def self.for_post(post: nil)
-      PostDetail.where(extra: RETORT_PLUGIN_NAME,
+      PostDetail.where(extra: Retort::PLUGIN_NAME,
                        post: post)
     end
 
@@ -87,7 +125,7 @@ after_initialize do
     end
 
     def self.find_by(post: nil, retort: nil)
-      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{RETORT_PLUGIN_NAME}"))
+      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{Retort::PLUGIN_NAME}"))
     end
 
     def valid?
@@ -136,7 +174,7 @@ after_initialize do
     after_update { run_callbacks :create if is_retort? }
 
     def is_retort?
-      extra == RETORT_PLUGIN_NAME
+      extra == Retort::PLUGIN_NAME
     end
 
     def retort_rate_limiter

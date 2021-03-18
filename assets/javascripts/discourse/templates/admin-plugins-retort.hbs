@@ -1,0 +1,64 @@
+<h2>{{i18n "admin.retort.migrate.title"}}</h2>
+<p class="description">{{{i18n "admin.retort.migrate.description"}}}</p>
+
+<div class="controls">
+  {{d-button
+    action="migrate"
+    class="btn-primary"
+    label="admin.retort.migrate.start"}}
+  
+  <div class="options">
+    <div class="option">
+      {{input type="checkbox" checked=realRun}}
+      <span>{{i18n 'admin.retort.migrate.real_run'}}</span>
+    </div>
+    <div class="option">
+      {{input type="checkbox" checked=deleteRetorts}}
+      <span>{{i18n 'admin.retort.migrate.delete_retorts'}}</span>
+    </div>
+  </div>
+</div>
+
+{{#if started}}
+  <div class="message success">
+    <span>{{i18n 'admin.retort.migrate.started'}}</span>
+  </div>
+{{/if}}
+
+{{#if report.error}}
+  <div class="message error">
+    <span>{{report.error}}</span>
+  </div>
+{{/if}}
+
+{{#if hasMigrations}}
+  <div class="report">
+    <h3>{{i18n 'admin.retort.migrations.title'}}</h3>
+    <table class="grid">
+      <thead>
+        <th>{{i18n 'admin.retort.migrations.migrated_at'}}</th>
+        <th>{{i18n 'admin.retort.migrations.retorts_migrated'}}</th>
+        <th>{{i18n 'admin.retort.migrations.user_doesnt_exist'}}</th>
+        <th>{{i18n 'admin.retort.migrations.retort_not_supported'}}</th>
+        <th>{{i18n 'admin.retort.migrations.post_deleted'}}</th>
+        <th>{{i18n 'admin.retort.migrations.user_already_reacted'}}</th>
+        <th>{{i18n 'admin.retort.migrations.real'}}</th>
+        <th>{{i18n 'admin.retort.migrations.retorts_deleted'}}</th>
+      </thead>
+      <tbody>
+        {{#each migrations as |migration|}}
+          <tr>
+            <td>{{format-date migration.migrated_at leaveAgo="true"}}</td>
+            <td>{{retort-report-item data=migration.retorts_migrated}}</td>
+            <td>{{retort-report-item data=migration.user_doesnt_exist}}</td>
+            <td>{{retort-report-item data=migration.retort_not_supported}}</td>
+            <td>{{retort-report-item data=migration.post_deleted}}</td>
+            <td>{{retort-report-item data=migration.user_already_reacted}}</td>
+            <td>{{migration.real}}</td>
+            <td>{{migration.retorts_deleted}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+{{/if}}
