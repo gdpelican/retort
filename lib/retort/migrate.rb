@@ -16,12 +16,13 @@ class ::Retort::Migrate
   end
   
   def self.discourse_reactions(real_run: false, delete_retorts: false)
+    result = ::Retort::MigrateResult.new
+
     unless Discourse.find_plugins(include_disabled: false).any?{ |p| p.name === 'discourse-reactions' }
       result.error = I18n.t("retort.migrate.discourse_reactions_not_enabled")
       return result
     end
-    
-    result = ::Retort::MigrateResult.new
+
     records = PostDetail.where(extra: Retort::PLUGIN_NAME)
     
     unless records.exists?
