@@ -8,19 +8,21 @@
   position: relative;
   outline: 0;
 
-  &:hover .post-retort__tooltip { opacity: 1 }
+  &:hover .post-retort__tooltip {
+    opacity: 1;
+  }
 
   &__tooltip {
     opacity: 0;
-    transition: .5s opacity;
+    transition: 0.5s opacity;
     position: absolute;
     bottom: 30px;
     font-size: 12px;
     text-align: center;
     min-width: 125px;
     max-width: 150px;
-    background: $primary;
-    color: $secondary;
+    background: var(--primary);
+    color: var(--secondary);
     font-weight: bold;
     padding: 5px;
     border-radius: 5px;
@@ -31,14 +33,14 @@
     pointer-events: none;
     word-break: break-word;
     &:after {
-      content: ' ';
+      content: " ";
       width: 7px;
       height: 7px;
       bottom: -5px;
       left: 50%;
       transform: rotate(45deg) translate(-50%, 0);
       position: absolute;
-      background: $primary;
+      background: var(--primary);
     }
   }
 
@@ -46,10 +48,10 @@
     font-size: 12px;
     padding: 1px;
     position: relative;
-    bottom: 3px;
+    bottom: 1px;
     left: 1px;
     font-weight: bold;
-    color: $secondary;
+    color: var(--primary-medium);
   }
 }
 
@@ -57,15 +59,15 @@
   height: auto;
   width: auto;
   padding: 10px;
-  
+
   .limited-emoji-set {
     display: flex;
   }
-  
+
   img.emoji {
     margin-right: 10px;
     cursor: pointer;
-    
+
     &:last-of-type {
       margin-right: 0;
     }
