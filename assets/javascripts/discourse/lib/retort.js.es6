@@ -1,5 +1,6 @@
 import { ajax } from 'discourse/lib/ajax'
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getOwner } from "discourse-common/lib/get-owner";
 
 export default Ember.Object.create({
   topic: { postStream: { posts: [] } },
@@ -17,6 +18,9 @@ export default Ember.Object.create({
       post.setProperties({ retorts })
       this.get(`widgets.${id}`).scheduleRerender()
     })
+
+    const siteSettings = getOwner(this).lookup("site-settings:main");
+    this.set('siteSettings', siteSettings);
   },
 
   postFor(id) {
@@ -36,7 +40,7 @@ export default Ember.Object.create({
   },
 
   disabledCategories() {
-    const categories = Discourse.SiteSettings.retort_disabled_categories.split('|');
+    const categories = this.siteSettings.retort_disabled_categories.split('|');
     return categories.map(cat => cat.toLowerCase()).filter(Boolean)
   },
 
