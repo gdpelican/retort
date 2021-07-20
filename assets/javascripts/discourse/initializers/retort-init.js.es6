@@ -18,7 +18,9 @@ function initializePlugin(api) {
   } = api.container.lookup('site-settings:main')
   const messageBus = api.container.lookup('message-bus:main')
 
-  api.decorateWidget('post-contents:after-cooked', helper => {
+  if (!retort_enabled) { return }
+
+  api.decorateWidget('post-menu:before-extra-controls', helper => {
     let postId = helper.getModel().id
     let post   = Retort.postFor(postId)
 
@@ -27,13 +29,25 @@ function initializePlugin(api) {
     Retort.storeWidget(helper)
     
     if (!post.retorts) { return }
-
-    return post.retorts.map(({usernames, emoji}) => {
-      return helper.attach('retort-toggle', { post, usernames, emoji });
+    
+    const retorts = post.retorts.map(({usernames, emoji}) => {
+      return helper.attach('retort-toggle', {
+        post,
+        usernames,
+        emoji
+      });
     });
-  })
+    
+    return helper.h('div.post-retort-container', retorts);
+  });
 
-  if (!User.current() || !retort_enabled) { return }
+  api.addPostClassesCallback((attrs) => {
+    if (!Retort.disabledFor(attrs.id)) {
+      return ["retort"];
+    }
+  });
+
+  if (!User.current()) { return }
 
   api.modifyClass('route:topic', {
     setupController(controller, model) {

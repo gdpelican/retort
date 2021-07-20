@@ -4,7 +4,6 @@
   float: left;
   padding: 2px;
   z-index: 1;
-  margin: 20px 2px;
   position: relative;
   outline: 0;
 
@@ -79,4 +78,19 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%);
+}
+
+.topic-post.retort nav.post-controls .actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+
+  .post-retort-container {
+    margin-right: auto;
+  }
+
+  button.post-retort {
+    flex: 0 1 auto;
+  }
 }
