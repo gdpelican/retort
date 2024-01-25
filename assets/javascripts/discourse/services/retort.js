@@ -47,6 +47,7 @@ export default class RetortService extends Service {
   }
 
   updateRetort({ id }, retort) {
+    debugger;
     return ajax(`/retorts/${id}.json`, {
       type: "POST",
       data: { retort },

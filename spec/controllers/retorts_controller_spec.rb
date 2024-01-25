@@ -1,38 +1,37 @@
-require "spec_helper"
+require 'rails_helper'
 
-path = "./plugins/retort/plugin.rb"
-source = File.read(path)
-plugin = Plugin::Instance.new(Plugin::Metadata.parse(source), path)
-plugin.activate!
-plugin.initializers.first.call
-
-describe ::Retort::RetortsController do
-  routes { ::Retort::Engine.routes }
+describe ::Retort::RetortsController, type: :request do
+  fab!(:user) { Fabricate(:user) }
+  fab!(:new_post) { Fabricate(:post) }
+  fab!(:another_user) { Fabricate(:user) }
+  let!(:existing) { Fabricate :post_detail, post: new_post, key: "wave|retort", value: [user.username], extra: "retort" }
 
   before do
-    SiteSetting.load_settings(File.join(Rails.root, 'plugins', 'retort', 'config', 'settings.yml'))
+    sign_in(another_user)
   end
 
-  describe "index" do
-    it "returns a list retorts for a post" do
-      xhr :get, :index
-    end
-
-    it "returns a list of retorts for a topic" do
-    end
+  it "updates a retort" do
+    expect do 
+      post "/retorts/#{new_post.id}.json",
+           params: {
+             retort: "heart_eyes"
+           }
+    end.to change { PostDetail.count }.by(1)
+    expect do 
+      post "/retorts/#{new_post.id}.json",
+           params: {
+             retort: "heart_eyes"
+           }
+    end.to change {Retort::Retort.for_post(post: new_post).count }.by(-1)
   end
 
-  describe "update" do
-    it "updates a retort" do
-    end
+  it "destroys a retort" do
+    sign_in(user)
+    post "/retorts/#{new_post.id}.json",
+      params: {
+        retort: "wave"
+      }
+     found = Retort::Retort.for_post(post: new_post)
+     expect(found.count).to eq(0)
   end
-
-  describe "destroy" do
-    it "destroys a retort"
-  end
-
-  def response_json
-    JSON.parse(response.body)
-  end
-
 end
