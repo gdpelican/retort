@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 describe ::Retort::Retort do
@@ -8,7 +9,7 @@ describe ::Retort::Retort do
   let(:another_topic_post) { Fabricate :post }
   let(:emoji) { 'kickbutt' }
   let(:altermoji) { 'puntrear' }
-  let (:detail) { Fabricate :post_detail, post: post, value: [user.username], key: "#{emoji}|retort", extra: Retort::RETORT_PLUGIN_NAME }
+  let(:detail) { Fabricate :post_detail, post: post, value: [user.username], key: "#{emoji}|retort", extra: Retort::RETORT_PLUGIN_NAME }
   let(:retort) { Retort::Retort.new(detail) }
 
   describe 'initialize' do

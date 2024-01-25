@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # name: retort
 # about: Reactions plugin for Discourse
 # version: 1.3.0
@@ -125,7 +126,7 @@ after_initialize do
     attributes :retorts
 
     def retorts
-      return ActiveModel::ArraySerializer.new(Retort::Retort.for_post(post: object), each_serializer: ::Retort::RetortSerializer).as_json
+      ActiveModel::ArraySerializer.new(Retort::Retort.for_post(post: object), each_serializer: ::Retort::RetortSerializer).as_json
     end
   end
 
@@ -153,7 +154,7 @@ after_initialize do
     end
 
     def retort_trust_multiplier
-      return 1.0 unless retort_author&.trust_level.to_i >= 2
+      return 1.0 if retort_author&.trust_level.to_i < 2
       SiteSetting.send(:"retort_tl#{retort_author.trust_level}_max_per_day_multiplier")
     end
   end
