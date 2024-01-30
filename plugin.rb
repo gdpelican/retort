@@ -1,17 +1,19 @@
+# frozen_string_literal: true
 # name: retort
 # about: Reactions plugin for Discourse
-# version: 1.2.3
-# authors: James Kiesel (gdpelican)
-# url: https://github.com/gdpelican/retort
+# version: 1.3.0
+# authors: James Kiesel (gdpelican), Robert Barrow
+# url: https://github.com/merefield/retort
 
 register_asset "stylesheets/retort.scss"
-
-RETORT_PLUGIN_NAME ||= "retort".freeze
 
 enabled_site_setting :retort_enabled
 
 after_initialize do
   module ::Retort
+
+    RETORT_PLUGIN_NAME ||= "retort".freeze
+
     class Engine < ::Rails::Engine
       engine_name RETORT_PLUGIN_NAME
       isolate_namespace Retort
@@ -77,7 +79,7 @@ after_initialize do
   ::Retort::Retort = Struct.new(:detail) do
 
     def self.for_post(post: nil)
-      PostDetail.where(extra: RETORT_PLUGIN_NAME,
+      PostDetail.where(extra: ::Retort::RETORT_PLUGIN_NAME,
                        post: post)
     end
 
@@ -87,7 +89,7 @@ after_initialize do
     end
 
     def self.find_by(post: nil, retort: nil)
-      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{RETORT_PLUGIN_NAME}"))
+      new(for_post(post: post).find_or_initialize_by(key: :"#{retort}|#{::Retort::RETORT_PLUGIN_NAME}"))
     end
 
     def valid?
@@ -124,7 +126,7 @@ after_initialize do
     attributes :retorts
 
     def retorts
-      return ActiveModel::ArraySerializer.new(Retort::Retort.for_post(post: object), each_serializer: ::Retort::RetortSerializer).as_json
+      ActiveModel::ArraySerializer.new(Retort::Retort.for_post(post: object), each_serializer: ::Retort::RetortSerializer).as_json
     end
   end
 
@@ -136,7 +138,7 @@ after_initialize do
     after_update { run_callbacks :create if is_retort? }
 
     def is_retort?
-      extra == RETORT_PLUGIN_NAME
+      extra == ::Retort::RETORT_PLUGIN_NAME
     end
 
     def retort_rate_limiter
@@ -152,7 +154,7 @@ after_initialize do
     end
 
     def retort_trust_multiplier
-      return 1.0 unless retort_author&.trust_level.to_i >= 2
+      return 1.0 if retort_author&.trust_level.to_i < 2
       SiteSetting.send(:"retort_tl#{retort_author.trust_level}_max_per_day_multiplier")
     end
   end

@@ -1,8 +1,9 @@
-{{
-  emoji-picker
-  retort=true
-  isActive=isActive
-  post=post
-  emojiSelected=emojiSelected
-  onEmojiPickerClose=(action (mut isActive) false)
-}}
+{{#if this.renderRetortPicker}}
+  {{emoji-picker
+    forRetort=true
+    isActive=isActive
+    post=post
+    emojiSelected=emojiSelected
+    onEmojiPickerClose=(action (mut isActive) false)
+  }}
+{{/if}}
