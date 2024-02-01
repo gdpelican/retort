@@ -8,6 +8,7 @@ export default class RetortService extends Service {
   @service siteSettings;
   @service messageBus;
   @service router;
+  @service currentUser;
   @tracked picker;
   @tracked model;
   @tracked widgets;
@@ -20,19 +21,20 @@ export default class RetortService extends Service {
     if (this.model.id) {
       this.messageBus.unsubscribe(`/retort/topics/${this.model.id}`);
     }
+    if (this.currentUser) {
+      this.messageBus.subscribe(
+        `/retort/topics/${this.model.id}`,
+        ({ id, retorts }) => {
+          const post = this.postFor(id);
+          if (!post) {
+            return;
+          }
 
-    this.messageBus.subscribe(
-      `/retort/topics/${this.model.id}`,
-      ({ id, retorts }) => {
-        const post = this.postFor(id);
-        if (!post) {
-          return;
+          post.setProperties({ retorts });
+          this.get(`widgets.${id}`).scheduleRerender();
         }
-
-        post.setProperties({ retorts });
-        this.get(`widgets.${id}`).scheduleRerender();
-      }
-    );
+      );
+    }
   }
 
   postFor(id) {
@@ -59,6 +61,9 @@ export default class RetortService extends Service {
   }
 
   disabledFor(postId) {
+    if (!this.currentUser) {
+      return true;
+    }
     const post = this.postFor(postId);
     if (!post) {
       return true;
