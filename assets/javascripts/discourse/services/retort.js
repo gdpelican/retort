@@ -61,12 +61,9 @@ export default class RetortService extends Service {
   }
 
   disabledFor(postId) {
-<<<<<<< HEAD
     if (!this.currentUser) {
       return true;
     }
-=======
->>>>>>> 111fcd2a2f25967adf5fb3fe4ce935c0f5ae5501
     const post = this.postFor(postId);
     if (!post) {
       return true;

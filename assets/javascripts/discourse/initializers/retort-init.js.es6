@@ -97,17 +97,10 @@ function initializePlugin(api) {
 
   api.attachWidgetAction("post-menu", "clickRetort", function () {
     const retort = api.container.lookup("service:retort");
-<<<<<<< HEAD
 
     retort.openPicker(this.findAncestorModel());
   });
 
-=======
-
-    retort.openPicker(this.findAncestorModel());
-  });
-
->>>>>>> 111fcd2a2f25967adf5fb3fe4ce935c0f5ae5501
   api.modifyClass("component:emoji-picker", {
     pluginId: PLUGIN_ID,
     retort: service(),
