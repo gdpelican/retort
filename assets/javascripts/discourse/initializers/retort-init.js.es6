@@ -22,29 +22,35 @@ function initializePlugin(api) {
   }
 
   api.decorateWidget("post-menu:before-extra-controls", (helper) => {
-    let retort = api.container.lookup("service:retort");
-    let postId = helper.getModel().id;
-    let post = retort.postFor(postId);
+    let currentUser = api.container.lookup("service:currentUser");
 
-    if (retort.disabledFor(postId)) {
-      return;
-    }
+    if (currentUser) {
+      let retort = api.container.lookup("service:retort");
+      let postId = helper.getModel().id;
+      let post = retort.postFor(postId);
 
-    retort.storeWidget(helper);
+      if (retort.disabledFor(postId)) {
+        return;
+      }
 
-    if (!post.retorts) {
-      return;
-    }
+      retort.storeWidget(helper);
 
-    const retorts = post.retorts.map(({ usernames, emoji }) => {
-      return helper.attach("retort-toggle", {
-        post,
-        usernames,
-        emoji,
+      if (!post.retorts) {
+        return;
+      }
+
+      const retorts = post.retorts.map(({ usernames, emoji }) => {
+        return helper.attach("retort-toggle", {
+          post,
+          usernames,
+          emoji,
+        });
       });
-    });
 
-    return helper.h("div.post-retort-container", retorts);
+      return helper.h("div.post-retort-container", retorts);
+    } else {
+      return "";
+    }
   });
 
   api.addPostClassesCallback((attrs) => {
