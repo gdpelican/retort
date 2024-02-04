@@ -1,0 +1,8 @@
+zh_CN:
+  js:
+    retort:
+      title: '对此帖子添加一个表情'
+      reactions:
+        one_person:  "%{first} 表示 :%{emoji}:"
+        two_people:  "%{first} 和 %{second} 表示 :%{emoji}:"
+        many_people: "%{first}，%{second} 和其他 %{count} 人表示 :%{emoji}:"
