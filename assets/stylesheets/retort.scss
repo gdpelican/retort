@@ -6,6 +6,8 @@
   z-index: 1;
   position: relative;
   outline: 0;
+  background-color: transparent;
+  border-color: transparent;
 
   &:hover .post-retort__tooltip {
     opacity: 1;
