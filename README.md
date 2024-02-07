@@ -2,7 +2,8 @@
 
 Retort allows you and your users to add slack-style reactions to your discourse posts.
 
-Check out a quick gif of it in action [here](http://recordit.co/7vHi2j74Rg.gif)!
+Check out a quick gif of it in action here.
+![Alt Text](http://recordit.co/7vHi2j74Rg.gif)
 
 ### Installation
 - Edit your web template and add the project clone url. (https://meta.discourse.org/t/install-a-plugin/19157)
