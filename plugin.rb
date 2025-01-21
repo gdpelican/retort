@@ -6,6 +6,8 @@
 # url: https://github.com/merefield/retort
 
 register_asset "stylesheets/retort.scss"
+register_asset "components/retort-button.js"
+register_asset "components/retort-button.hbs"
 
 enabled_site_setting :retort_enabled
 
